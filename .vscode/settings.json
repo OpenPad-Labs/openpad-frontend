@@ -1,0 +1,14 @@
+{
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+  "editor.formatOnSave": false,
+  "editor.tabSize": 2,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  "files.autoSaveDelay": 500,
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "stylelint.validate": ["css", "scss"],
+  "cSpell.words": ["clsxm", "Complate", "NFTNG", "swiper"]
+}

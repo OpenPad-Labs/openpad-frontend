@@ -1,0 +1,37 @@
+{
+  "title": "FreeBe",
+  "titleTemplate": "FreeBe",
+  "description": "FreeBe runs as a DAO, aims to build a DAO-DNA chain, and starts with promoting a sustainable and fair incentive mechanism for decentralized organizations.",
+  "additionalLinkTags": [
+    {
+      "rel": "icon",
+      "href": "/favicon.svg"
+    }
+  ],
+  "additionalMetaTags": [
+    {
+      "property": "application-name",
+      "content": "FreeBe"
+    },
+    {
+      "name": "keywords",
+      "content": "FreeBe,DAO tool,Decentralization Community,Aragon,Dework,Web3,Blockchain"
+    }
+  ],
+  "twitter": {
+    "cardType": "summary_large_image",
+    "handle": "@FreeBe98710453",
+    "site": "@FreeBe98710453"
+  },
+  "openGraph": {
+    "type": "website",
+    "site_name": "FreeBe",
+    "images": [
+      {
+        "url": "https://free-be.xyz/logo.svg",
+        "width": 243,
+        "height": 125
+      }
+    ]
+  }
+}
