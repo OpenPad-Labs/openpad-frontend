@@ -359,7 +359,7 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
         arguments: [
           '0xd7a4fbd4c4c4fc16a5dbd88d045f0e4faacc31f0',
           formik.values.text,
-          "ipfs://" + url,
+          "https://gateway.ipfs.io/ipfs/" + url+"/blob",
         ],
         gasBudget: 10000,
       };
