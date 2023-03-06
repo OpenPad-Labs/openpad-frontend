@@ -10,7 +10,9 @@
     @media (max-width:750px) {
       width: calc(100vw - 40px);
     }
-
+    .example::-webkit-scrollbar {
+      display: none;
+    }
     .firstContent {
       margin-top: 100px;
       display: flex;

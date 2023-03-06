@@ -44,10 +44,14 @@ const BannerComp = () => {
 }
 
 const ImageCardBox = ({formik, aiImgList,genLoading}) => {
-  console.log("aiImgList", aiImgList)
+  // console.log("aiImgList", aiImgList)
   return (
     <Box sx={{ position: 'relative' }}>
-    <ImageList sx={{width: 600, height: 600}} cols={2} rowHeight={290}>
+    <ImageList
+      className={styles.example}
+      sx={{width: 600,
+      height: 600
+    }} cols={2} rowHeight={290}>
       {aiImgList.map((item) => (
         <ImageListItem
           key={item.seed}
