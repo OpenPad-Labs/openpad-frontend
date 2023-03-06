@@ -1,0 +1,112 @@
+.header {
+  background: #14141f;
+  // opacity: 0.9;
+  // backdrop-filter: blur(2px);
+  // width: 100%;
+  padding: 10px 0;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: 999;
+
+  .content {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+    align-items: center;
+    width: 1200px;
+
+    @media (max-width:750px) {
+      width: calc(100vw - 40px);
+    }
+
+    .left {
+      display: flex;
+      align-items: center;
+
+      .logo {
+        width: 78.75px;
+        height: 30px;
+        cursor: pointer;
+      }
+
+      .searchInput {
+        background: #1f1f2c;
+        border-radius: 25px;
+        height: 40px;
+        width: 294px;
+        border-radius: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 14px;
+        margin-left: 47px;
+
+        @media (max-width:750px) {
+          display: none;
+        }
+
+        .searchIcon {
+          width: 20px;
+          height: 20px;
+        }
+
+        .input {
+          font-family: 'Montserrat';
+          font-style: normal;
+          font-weight: 500;
+          font-size: 14px;
+          line-height: 22px;
+          color: #fff;
+          // margin-left: 18px;
+          border: none;
+          outline: none;
+
+          &::placeholder {
+            color: #8a8aa0;
+          }
+        }
+      }
+
+      .tabList {
+        margin-left: 89px;
+        display: flex;
+        align-items: center;
+
+        @media (max-width:750px) {
+          display: none;
+        }
+
+        .item {
+          font-family: 'Montserrat';
+          font-style: normal;
+          font-weight: 500;
+          font-size: 16px;
+          line-height: 24px;
+          display: flex;
+          align-items: center;
+
+          color: rgba(255, 255, 255, 0.6);
+          margin-right: 32px;
+          cursor: pointer;
+
+          &.active {
+            color: #fff;
+          }
+        }
+      }
+    }
+  }
+}
+
+.connect-button {
+  width: 100px;
+
+  button,
+  html [type="button"],
+  [type="reset"],
+  [type="submit"] {
+    -webkit-appearance: button-bevel !important;
+  }
+}
