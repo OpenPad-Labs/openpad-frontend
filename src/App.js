@@ -19,7 +19,8 @@ import Footer from './components/footer/Footer'
 function App() {
 
   return (
-    <WalletProvider defaultWallets={[SuietWallet]}>
+    <WalletProvider defaultWallets={[SuietWallet,MartianWallet]}>
+
       <Header />
       <Routes>
         {routes.map((data, index) => (

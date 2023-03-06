@@ -208,7 +208,7 @@ const InfoComp = () => {
   )
 }
 
-const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText}) => {
+const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoint}) => {
 
   const [aiImgList, setAiImgList] = useState([
     {
@@ -235,6 +235,7 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText}) => {
   const wallet = useWallet();
 
   const RequestAI = async () => {
+    console.log(wallet?.account?.address)
       // 找到锚点
       // let anchorElement = document.getElementById("aiResult");
       // console.log("anchorElement",anchorElement)
@@ -298,9 +299,10 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText}) => {
         aiList.push(obj)
       })
       setAiImgList(aiList)
-
-      consumePoint(wallet?.account?.address)
     }
+    const consumePointResult=await consumePoint(wallet?.account?.address)
+    console.log("consumePointResult",consumePointResult)
+    setUserPoint(consumePointResult)
   }
 
   const [successOpen, setSuccessOpen] = useState(false);

@@ -160,7 +160,9 @@ const Header = () => {
             }
           }}
         >
-          <ConnectButton label="Connect Wallet" />
+          <ConnectButton label="Connect Wallet" >
+
+          </ConnectButton>
         </Box>
         {/* <DarkMode /> */}
       </div>
