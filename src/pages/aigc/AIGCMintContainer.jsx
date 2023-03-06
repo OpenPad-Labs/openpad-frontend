@@ -343,7 +343,7 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
       var item=mintList[i]
       // console.log("item",item.fields.key)
       // console.log("wallet?.account?.address",wallet?.account?.address)
-      if (item.fields.key === wallet?.account?.address && item.fields.value === "5") {
+      if (item.fields.key === wallet?.account?.address && item.fields.value === "3") {
         await setModalText('address minted limit')
         setOpen(true)
         return
