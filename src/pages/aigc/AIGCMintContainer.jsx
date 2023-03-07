@@ -6,6 +6,7 @@ import image8 from '../../assets/img/page/aigc/image8.png'
 import image9 from '../../assets/img/page/aigc/image9.png'
 import image10 from '../../assets/img/page/aigc/image10.png'
 import image11 from '../../assets/img/page/aigc/image11.png'
+import MaskGroup from '../../assets/img/page/aigc/MaskGroup.svg'
 import {Box, TextField, Button, Typography, ImageList, ImageListItem, Checkbox} from '@mui/material'
 import twitterIcon from '../../assets/img/page/product_detail/twitter.png'
 import RadioButtonCheckedIcon from '@mui/icons-material/RadioButtonChecked';
@@ -20,6 +21,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import AIGCSuccessModal from 'src/components/AIGC/AIGCSuccessModal'
 import AIGCModal from "../../components/AIGC/AIGCModal";
 import {JsonRpcProvider, devnetConnection} from '@mysten/sui.js';
+import AccordionCard from "src/components/accordionCard/AccordionCard";
 
 const platformList = [
   {
@@ -34,10 +36,10 @@ const BannerComp = () => {
   return (
     <div className={styles.left}>
       <div className={styles.swiper}>
-        <img className={styles.image8} src={image8} alt=''/>
-        <img className={styles.image9} src={image9} alt=''/>
-        <img className={styles.image10} src={image10} alt=''/>
-        <img className={styles.image11} src={image11} alt=''/>
+        <img className={styles.image8} src={MaskGroup} alt=''/>
+        {/*<img className={styles.image9} src={image9} alt=''/>*/}
+        {/*<img className={styles.image10} src={image10} alt=''/>*/}
+        {/*<img className={styles.image11} src={image11} alt=''/>*/}
       </div>
     </div>
   )
@@ -161,7 +163,8 @@ const TextInputComp = ({formik}) => {
         placeholder="e.g. A master piece of a person in cyberpunk style."
         sx={{
           '.MuiInputBase-root': {
-            color: '#C4C4C4 !important',
+            fontFamily: 'Montserrat',
+          color: '#C4C4C4 !important',
             border: '1px solid #C4C4C4'
           },
           my: 2,
@@ -195,19 +198,11 @@ const InfoComp = () => {
         </div>
       </div>
       <div className={styles.desc}>
-        Suicasso is the first AIGC NFT on SUI.<br/> <br/>
-
-        Currently, It is live on the SUI devnet but all participants will receive the same NFT when the SUI mainnet launches.<br/> <br/>
-        <div className={styles.descWeight}>
-          The first 1000 of Suicasso will be sent to Maxi supporters for free. <br/>
-          Simply:<br/>
-          1. Follow @maxi_sui on twitter<br/>
-          2. Retweet this tweet<br/>
-          3. Comment your wallet address on the tweet<br/>
-          4. Wait for our moderators to add you to the whitelist(Should take a few minutes)<br/><br/>
-        </div>
-        Then you can generate the art and mint it below.<br/>
+        Suicasso is the first AIGC NFT on SUI. With a text prompt and a picture (optional), you can generate a unique artwork and mint it.
+        <br/><br/>
+        Total Supply: unlimited
       </div>
+      <AccordionCard title="Phase 1" />
     </>
   )
 }
@@ -239,6 +234,7 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
   const wallet = useWallet();
 
   const RequestAI = async () => {
+    // setGenMintLoading(true)
     console.log(wallet?.account?.address)
       // 找到锚点
       // let anchorElement = document.getElementById("aiResult");
@@ -252,8 +248,7 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
       return
     }
     if (userPoint <= 0) {
-      await setModalText('Oops, it appears that you run out of points.\n\n' +
-        'Simply comment “I need more points + wallet address” under this tweet. And our moderators will send more to you soon :-)');
+      await setModalText(<><span>Oops, it appears that you run out of points. <br/><br/>Simply comment “I need more points! My SUI wallet address” under this <a href={'https://twitter.com/intent/tweet?text=I%20need%20more%20points!%20My_Sui_Wallet_Adress_Here:'+wallet?.account?.address+'&in_reply_to=1632245849362415617'} target='_blank' style={{color:'#5142FC'}}>tweet</a>. And our moderators will send more to you soon :-)</span></>);
       setOpen(true)
       return
     }
@@ -268,12 +263,11 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
     const provider = new JsonRpcProvider(devnetConnection);
     // get tokens from the DevNet faucet server
     const objects = await provider.getObject(
-      '0xd7a4fbd4c4c4fc16a5dbd88d045f0e4faacc31f0',
+      '0x7f3212aec356fdafad71f6c19059b61f2145c9c3',
     );
-    if (objects?.details?.data?.fields?.whitelist?.fields?.contents.indexOf(wallet?.account?.address) <= -1) {
-      await setModalText('It appears you are not on the whitelist.\n' +
-        '\n' +
-        'Please follow the instructions on this page to get on the whitelist. If you have any doubt, please contact @Maxi_sui via twitter.');
+    // console.log(objects?.details?.data?.fields)
+    if (objects?.details?.data?.fields === undefined || objects?.details?.data?.fields?.whitelist?.fields?.contents.indexOf(wallet?.account?.address) <= -1) {
+      await setModalText(<><span>It appears you are not on the whitelist. <br/><br/>Please follow the </span> <a href='https://twitter.com/Maxi_sui/status/1632259059788419072' target='_blank' style={{color:'#5142FC'}}>instructions</a><span> to get on the whitelist. If you have any doubt, please contact <a href='https://twitter.com/Maxi_sui' target='_blank' style={{color:'#5142FC'}} >@Maxi_sui</a> via twitter.</span></>)
       setOpen(true)
       return
     }
@@ -281,7 +275,7 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
     window.scrollTo({
       top: 1400,
       behavior: "smooth"
-    });
+    })
     }, 100);
     setCantClick(true)
     setGenLoading(true)
@@ -325,7 +319,7 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
     }
     var imageString = formik.values.checked.pic;
     if (formik.values.checked.seed <= 4) {
-      await setModalText('You don\'t have picture')
+      await setModalText('You haven’t generated any pictures yet.')
       setOpen(true)
       return
     }
@@ -334,11 +328,11 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
     const provider = new JsonRpcProvider(devnetConnection);
     // get tokens from the DevNet faucet server
     const objects = await provider.getObject(
-      '0xd7a4fbd4c4c4fc16a5dbd88d045f0e4faacc31f0',
+      '0x7f3212aec356fdafad71f6c19059b61f2145c9c3',
     );
-    // console.log([0].fields)
+    console.log(objects)
     const mintList = objects?.details?.data?.fields?.address_minted?.fields?.contents
-    // console.log("mintList",mintList)
+    console.log("mintList",mintList)
     for(var i=0;i<mintList.length;i++){
       var item=mintList[i]
       // console.log("item",item.fields.key)
@@ -350,10 +344,14 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
       }
     }
 
-    setCantClick(true)
-    setGenMintLoading(true)
+    await setModalText('Uploading artwork to IPFS, this could take a few minutes......')
+    setOpen(true)
     try {
       const url = await uploadToNFTStorage(DataURIToBlob(imageString))
+      setOpen(false)
+
+      setCantClick(true)
+      setGenMintLoading(true)
       // console.log(url)
       const data = {
         packageObjectId: '0xb161ddb6354c6610807dd2ca83a38be9621aee74',
@@ -361,7 +359,7 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
         function: 'mint',
         typeArguments: [],
         arguments: [
-          '0xd7a4fbd4c4c4fc16a5dbd88d045f0e4faacc31f0',
+          '0xa80f535240dc1e06a050b60447d507cf44cd6607',
           formik.values.text,
           "https://gateway.ipfs.io/ipfs/" + url+"/blob",
         ],
@@ -427,7 +425,11 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
             className={styles.mintNowForFree}
             onClick={mintNFT}>
             Mint now for free
-            {genMintLoading ? <CircularProgress className={styles.generateLoading}/> : null}
+            {genMintLoading ? <CircularProgress sx={{
+              width: '20px !important',
+              height: '20px !important',
+              color:'red !important'
+            }} className={styles.generateLoading}/> : null}
           </Button>
           <AIGCSuccessModal setOpen={setSuccessOpen} userImage={userImage} text={""} open={successOpen}/>
           {/*<AIGCModal setOpen={setOpen} text={modalText} open={open} />*/}

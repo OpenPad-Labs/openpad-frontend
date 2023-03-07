@@ -54,6 +54,10 @@ export const genaigc = async (content) => {
         "text_prompts": [
           {
             "text": content
+          },
+          {
+            "text": "Deformed, blurry, bad anatomy, disfigured, poorly drawn face, mutation, mutated, extra limb, ugly, poorly drawn hands, missing limb, blurry, malformed hands, blur, long body, ugly face, blur haze, blur haze, blur haze, blur haze, blur haze, blur haze, bad quality, low quality",
+            "weight":-0.9
           }
         ],
         "start_schedule": 0.5,
@@ -96,6 +100,8 @@ export const genaigcByPic = async (content, file) => {
     formData.append("width", 512)
     formData.append("samples", 4)
     formData.append('text_prompts[0][text]', content)
+    formData.append('text_prompts[1][text]', "Deformed, blurry, bad anatomy, disfigured, poorly drawn face, mutation, mutated, extra limb, ugly, poorly drawn hands, missing limb, blurry, malformed hands, blur, long body, ugly face, blur haze, blur haze, blur haze, blur haze, blur haze, blur haze, bad quality, low quality")
+    formData.append('text_prompts[1][weight]', -0.9)
     const res = await axios.post(`https://api.stability.ai/v1beta/generation/stable-diffusion-512-v2-0/image-to-image`, formData,
       {
         headers: {

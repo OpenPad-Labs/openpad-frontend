@@ -61,7 +61,7 @@ const AIGCSuccessModal = ({
             my: 2,
             whiteSpace: 'pre-line'
           }}
-        >Be sure to share your creation using #suicasso on twitter!</Typography>
+        >Be sure to share your creation using <a href='https://twitter.com/hashtag/Suicasso' target='_blank' style={{color:'#5142FC'}}>#suicasso</a> on twitter!</Typography>
 
         <Button
           variant="contained"
@@ -78,9 +78,12 @@ const AIGCSuccessModal = ({
               backgroundColor: '#fff',
             }
           }}
-          onClick={() => { setOpen(false) }}
+          onClick={() => {
+            setOpen(false)
+            window.open("https://twitter.com/intent/tweet?text=Do%20you%20like%20my%20first%20%23Suicasso%20NFT%3F%20First%20AIGC%20%23NFT%20on%20%23SUI%20IS%20LIVE%20on%20%40Maxi_sui%20%F0%9F%8E%89%20Let's%20Mint%20More%20at%20https%3A%2F%2Fmaxi.to%2Fsuicasso&in_reply_to=1632245849362415617");
+          }}
         >
-          OK
+          Tweet now
         </Button>
       </Box>
     </Modal >
