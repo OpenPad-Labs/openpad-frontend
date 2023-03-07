@@ -12,6 +12,7 @@ const AIGCMint = () => {
   const [open, setOpen] = useState(false);
   const [modalText, setModalText] = useState('');
   const [userPoint, setUserPoint] = useState(0);
+  const [showResults, setShowResults] = useState(true);
 
   const formik = useFormik({
     initialValues: {
@@ -52,10 +53,10 @@ const AIGCMint = () => {
     <>
       <div className={styles.AIGCMint}>
         <div className={styles.container}>
-          <AIGCMintContainer formik={formik} userPoint={userPoint} setOpen={setOpen} setModalText={setModalText} setUserPoint={setUserPoint}/>
+          <AIGCMintContainer formik={formik} userPoint={userPoint} setOpen={setOpen} setModalText={setModalText} setUserPoint={setUserPoint} setShowResults={setShowResults}/>
         </div>
       </div>
-      <AIGCModal setOpen={setOpen} text={modalText} open={open}/>
+      <AIGCModal setOpen={setOpen} text={modalText} open={open} showResults={showResults}/>
     </>
   )
 }

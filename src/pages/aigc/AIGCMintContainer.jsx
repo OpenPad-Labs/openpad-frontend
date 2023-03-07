@@ -207,7 +207,7 @@ const InfoComp = () => {
   )
 }
 
-const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoint}) => {
+const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoint,setShowResults}) => {
 
   const [aiImgList, setAiImgList] = useState([
     {
@@ -244,17 +244,20 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
 
     if (formik.values.text === "") {
       await setModalText('Please describe your art');
+      setShowResults(true)
       setOpen(true)
       return
     }
     if (userPoint <= 0) {
       await setModalText(<><span>Oops, it appears that you run out of points. <br/><br/>Simply comment “I need more points! My SUI wallet address” under this <a href={'https://twitter.com/intent/tweet?text=I%20need%20more%20points!%20My_Sui_Wallet_Adress_Here:'+wallet?.account?.address+'&in_reply_to=1632245849362415617'} target='_blank' style={{color:'#5142FC'}}>tweet</a>. And our moderators will send more to you soon :-)</span></>);
+      setShowResults(true)
       setOpen(true)
       return
     }
 
     if (!wallet.connected) {
       await setModalText('Please connect wallet');
+      setShowResults(true)
       setOpen(true)
       return
     }
@@ -263,11 +266,12 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
     const provider = new JsonRpcProvider(devnetConnection);
     // get tokens from the DevNet faucet server
     const objects = await provider.getObject(
-      '0x7f3212aec356fdafad71f6c19059b61f2145c9c3',
+      '0xa80f535240dc1e06a050b60447d507cf44cd6607',
     );
-    // console.log(objects?.details?.data?.fields)
+    console.log(objects?.details)
     if (objects?.details?.data?.fields === undefined || objects?.details?.data?.fields?.whitelist?.fields?.contents.indexOf(wallet?.account?.address) <= -1) {
       await setModalText(<><span>It appears you are not on the whitelist. <br/><br/>Please follow the </span> <a href='https://twitter.com/Maxi_sui/status/1632259059788419072' target='_blank' style={{color:'#5142FC'}}>instructions</a><span> to get on the whitelist. If you have any doubt, please contact <a href='https://twitter.com/Maxi_sui' target='_blank' style={{color:'#5142FC'}} >@Maxi_sui</a> via twitter.</span></>)
+      setShowResults(true)
       setOpen(true)
       return
     }
@@ -309,17 +313,20 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
   const mintNFT = async () => {
     if (!wallet.connected) {
       await setModalText('Please connect wallet');
+      setShowResults(true)
       setOpen(true)
       return
     }
     if (undefined === formik.values.checked) {
       await setModalText('Please select one of the four images')
+      setShowResults(true)
       setOpen(true)
       return
     }
     var imageString = formik.values.checked.pic;
     if (formik.values.checked.seed <= 4) {
       await setModalText('You haven’t generated any pictures yet.')
+      setShowResults(true)
       setOpen(true)
       return
     }
@@ -328,7 +335,7 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
     const provider = new JsonRpcProvider(devnetConnection);
     // get tokens from the DevNet faucet server
     const objects = await provider.getObject(
-      '0x7f3212aec356fdafad71f6c19059b61f2145c9c3',
+      '0xa80f535240dc1e06a050b60447d507cf44cd6607',
     );
     console.log(objects)
     const mintList = objects?.details?.data?.fields?.address_minted?.fields?.contents
@@ -339,22 +346,25 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
       // console.log("wallet?.account?.address",wallet?.account?.address)
       if (item.fields.key === wallet?.account?.address && item.fields.value === "3") {
         await setModalText('address minted limit')
+        setShowResults(true)
         setOpen(true)
         return
       }
     }
 
     await setModalText('Uploading artwork to IPFS, this could take a few minutes......')
+    await setShowResults(false)
     setOpen(true)
     try {
       const url = await uploadToNFTStorage(DataURIToBlob(imageString))
+      setShowResults(true)
       setOpen(false)
 
       setCantClick(true)
       setGenMintLoading(true)
       // console.log(url)
       const data = {
-        packageObjectId: '0xb161ddb6354c6610807dd2ca83a38be9621aee74',
+        packageObjectId: '0x7f3212aec356fdafad71f6c19059b61f2145c9c3',
         module: 'suicasso',
         function: 'mint',
         typeArguments: [],
@@ -380,6 +390,7 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
     } catch (e) {
       // console.error('nft mint failed', e);
       await setModalText('The mint failed for some reason. Please try again.');
+      setShowResults(true)
       setOpen(true)
       setCantClick(false)
       setGenMintLoading(false)

@@ -4,7 +4,8 @@ import { display } from "@mui/system"
 const AIGCModal = ({
   text = "",
   setOpen,
-  open
+  open,
+                     showResults=true
 }) => {
   return (
     <Modal
@@ -38,7 +39,7 @@ const AIGCModal = ({
             whiteSpace: 'pre-line'
           }}
         >{text}</Typography>
-        <Button
+        {showResults?<Button
           variant="contained"
           sx={{
             color: '#000',
@@ -56,7 +57,7 @@ const AIGCModal = ({
           onClick={() => { setOpen(false) }}
         >
           OK
-        </Button>
+        </Button>:null}
       </Box>
     </Modal >
   )
