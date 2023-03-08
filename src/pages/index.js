@@ -38,7 +38,7 @@ const routes = [
   // { path: '/', component: <Home01 />},
   { path: '/', component: <Aigc /> },
   { path: '/product-detail', component: <ProductDetail /> },
-  { path: '/aigc-mint', component: <Aigc /> }
+  { path: '/suicasso', component: <Aigc /> }
   // { path: '/home-02', component: <Home02 /> },
   // { path: '/home-03', component: <Home03 /> },
   // { path: '/home-04', component: <Home04 /> },

@@ -16,7 +16,7 @@ const Header = () => {
     {
       key: 'Suicasso',
       name: 'Suicasso',
-      link: '/aigc-mint'
+      link: '/suicasso'
     },
     {
       key: 'Launchpad',
@@ -56,7 +56,7 @@ const Header = () => {
     console.log(index)
 
     if (index===0) {
-      navigate('/aigc-mint')
+      navigate('/suicasso')
       setActiveIndex(index)
     }else {
       toast.info(
@@ -77,7 +77,7 @@ const Header = () => {
     <header id='header_main' className={classNames(styles.header, 'js-header')} ref={headerRef}>
       <div className={styles.content}>
         <div className={styles.left}>
-          <Link to="/aigc-mint"><img className={styles.logo} src={LogoIcon} alt='' /></Link>
+          <Link to="/suicasso"><img className={styles.logo} src={LogoIcon} alt='' /></Link>
           <div className={styles.searchInput}>
             <img src={searchIcon} alt='' className={styles.searchIcon} />
             <input className={styles.input} type='text' placeholder='Type to search...' />
