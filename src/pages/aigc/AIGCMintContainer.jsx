@@ -15,7 +15,7 @@ import UploadImageComp from 'src/components/AIGC/UploadImageComp'
 import vector from '../../assets/img/page/aigc/Vector.svg'
 import {consumePoint, genaigc, genaigcByPic, getPoint} from "../../service/aigcMint";
 import {ConnectWallet} from "../../web3/useMetaConnect";
-import {SuietWallet, useWallet} from '@suiet/wallet-kit';
+import {SuietWallet, useWallet,useAccountBalance} from '@suiet/wallet-kit';
 import {upload, DataURIToBlob, uploadToNFTStorage} from "../../web3/ipfs";
 import CircularProgress from '@mui/material/CircularProgress';
 import AIGCSuccessModal from 'src/components/AIGC/AIGCSuccessModal'
@@ -249,7 +249,7 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
       return
     }
     if (userPoint <= 0) {
-      await setModalText(<><span>Oops, it appears that you run out of points. <br/><br/>Simply comment “I need more points! My SUI wallet address” under this <a href={'https://twitter.com/intent/tweet?text=I%20need%20more%20points!%20My_Sui_Wallet_Adress_Here:'+wallet?.account?.address+'&in_reply_to=1632245849362415617'} target='_blank' style={{color:'#5142FC'}}>tweet</a>. And our moderators will send more to you soon :-)</span></>);
+      await setModalText(<><span>Oops, it appears that you run out of points. <br/><br/>Simply comment “I need more points! My SUI wallet address” under this <a href={'https://twitter.com/intent/tweet?text=I%20need%20more%20points!%20My Sui wallet address is:'+wallet?.account?.address+'&in_reply_to=1632245849362415617'} target='_blank' style={{color:'#5142FC'}}>tweet</a>. And our moderators will send more to you soon :-)</span></>);
       setShowResults(true)
       setOpen(true)
       return
@@ -309,14 +309,20 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
 
   const [successOpen, setSuccessOpen] = useState(false);
   const [userImage, setUserImage] = useState(false);
+  const [scanUrl, setScanUrl] = useState("");
+
+  const { error, loading, balance } = useAccountBalance();
 
   const mintNFT = async () => {
+
     if (!wallet.connected) {
       await setModalText('Please connect wallet');
       setShowResults(true)
       setOpen(true)
       return
     }
+    // console.log(balance)
+    // console.log(balance===0n)
     if (undefined === formik.values.checked) {
       await setModalText('Please select one of the four images')
       setShowResults(true)
@@ -326,6 +332,13 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
     var imageString = formik.values.checked.pic;
     if (formik.values.checked.seed <= 4) {
       await setModalText('You haven’t generated any pictures yet.')
+      setShowResults(true)
+      setOpen(true)
+      return
+    }
+    if (balance===0n){
+      await setModalText(<><span>our wallet balance is 0 SUI. <br/>
+      Please request dev-net SUI tokens in your wallet or follow these <a href="https://docs.sui.io/explore/wallet-browser#add-sui-tokens-to-your-sui-wallet" target='_blank' style={{color:'#5142FC'}}> instructions.</a></span></>);
       setShowResults(true)
       setOpen(true)
       return
@@ -352,7 +365,15 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
       }
     }
 
-    await setModalText('Uploading artwork to IPFS, this could take a few minutes......')
+    await setModalText(<><div style={{
+      display:'flex',
+      justifyContent:"center",
+      marginBottom: "22px"
+    }}><CircularProgress sx={{
+      width: '30px !important',
+      height: '30px !important',
+      color: 'white'
+    }} className={styles.generateLoading}/></div><span>Uploading artwork to IPFS, this could take a few minutes......</span></>)
     await setShowResults(false)
     setOpen(true)
     try {
@@ -381,7 +402,8 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
           data
         }
       });
-      // console.log('nft minted successfully!', resData);
+      // console.log('nft minted successfully!', resData?.effects?.created[0].reference?.objectId)
+      setScanUrl("https://suiscan.xyz/devnet/object/"+resData?.effects?.created[0].reference?.objectId)
       // alert('congrats, a cute capybara comes to you!')
       setUserImage(imageString)
       setSuccessOpen(true)
@@ -442,7 +464,7 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
               color:'red !important'
             }} className={styles.generateLoading}/> : null}
           </Button>
-          <AIGCSuccessModal setOpen={setSuccessOpen} userImage={userImage} text={""} open={successOpen}/>
+          <AIGCSuccessModal setOpen={setSuccessOpen} userImage={userImage} text={""} open={successOpen} scanUrl={scanUrl}/>
           {/*<AIGCModal setOpen={setOpen} text={modalText} open={open} />*/}
         </div>
       </div>
