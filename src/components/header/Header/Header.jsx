@@ -58,6 +58,9 @@ const Header = () => {
     if (index===0) {
       navigate('/suicasso')
       setActiveIndex(index)
+    }else if (index===1){
+      navigate('/')
+      setActiveIndex(index)
     }else {
       toast.info(
         <Box sx={{

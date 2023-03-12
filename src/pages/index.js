@@ -36,7 +36,7 @@ import HomePage from './Home/HomePage'
 
 const routes = [
   // { path: '/', component: <Home01 />},
-  { path: '/', component: <Aigc /> },
+  { path: '/', component: <HomePage /> },
   { path: '/product-detail', component: <ProductDetail /> },
   { path: '/suicasso', component: <Aigc /> }
   // { path: '/home-02', component: <Home02 /> },
