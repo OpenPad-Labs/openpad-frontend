@@ -27,7 +27,7 @@ import AccordionCard from './AccordionCard'
 import { checkEligibility } from '../../service/mint'
 
 const Home = () => {
-  const [nftList, setNftList] = useState([])
+  const [nftDetail, setNftDetail] = useState([])
   const [bannerList, setBannerList] = useState([])
   const history = useNavigate()
   const [activeTab, setActiveTab] = useState(0)
@@ -58,42 +58,70 @@ const Home = () => {
   const [questionList, setQuestionList] = useState(defaultQuestionList)
 
   const platformList = [
-    {
-      name: 'Net',
-      icon: netIcon,
-      url: ''
-    },
-    {
-      name: 'Discord',
-      icon: discordIcon,
-      url: ''
-    },
-    {
-      name: 'Twitter',
-      icon: twitterIcon,
-      url: ''
-    },
-    {
-      name: 'Telegram',
-      icon: telegramIcon,
-      url: ''
-    },
-    {
-      name: 'Note',
-      icon: noteIcon,
-      url: ''
-    }
+    // {
+    //   name: 'Net',
+    //   icon: netIcon,
+    //   url: ''
+    // },
+    // {
+    //   name: 'Discord',
+    //   icon: discordIcon,
+    //   url: ''
+    // },
+    // {
+    //   name: 'Twitter',
+    //   icon: twitterIcon,
+    //   url: ''
+    // },
+    // {
+    //   name: 'Telegram',
+    //   icon: telegramIcon,
+    //   url: ''
+    // },
+    // {
+    //   name: 'Note',
+    //   icon: noteIcon,
+    //   url: ''
+    // }
   ]
 
   const initData = async () => {
     const bList = await getBanner()
     setBannerList(bList)
-    const nList = await getNftList({
-      pageIndex: 0,
-      pageSize: 10,
-      status: 'minting'
+    const nftResult = await getNftDetail({
+      nftCollectionId: '22222'
     })
-    setNftList(nList?.maxiNftCollectionList)
+    // console.log(nList)
+    if (nftResult.website!=null){
+      platformList.add({
+        name: 'Net',
+        icon: netIcon,
+        url: nftResult.website
+      })
+    }
+    if (nftResult.discord!=null){
+      platformList.add({
+        name: 'Discord',
+        icon: discordIcon,
+        url: nftResult.discord
+      })
+    }
+    if (nftResult.twitter!=null){
+      platformList.add({
+        name: 'Twitter',
+        icon: twitterIcon,
+        url: nftResult.twitter
+      })
+    }
+   if (nftResult.telegram!=null){
+      platformList.add({
+        name: 'Telegram',
+        icon: telegramIcon,
+        url: nftResult.telegram
+      })
+    }
+
+    setNftDetail(nftResult)
   }
 
   useEffect(() => {
@@ -115,13 +143,15 @@ const Home = () => {
             </div>
           </div>
           <div className={styles.right}>
-            <div className={styles.title}>Sui Bears</div>
+            <div className={styles.title}>{nftDetail.nftCollectionName}</div>
             <div className={styles.box1}>
               <img className={styles.userInfoIcon} src={userInfoIcon} alt='' />
               <div className={styles.platformBox}>
                 {platformList.map((item, index) => {
                   return (
-                    <div className={styles.platformItem} key={index}>
+                    <div className={styles.platformItem} key={index} onClick={() => {
+                      window.open(nftDetail.url);
+                    }}>
                       <img className={styles.platformIcon} src={item.icon} alt='' />
                       {/* <span className={styles.platformName}>{item.name}</span> */}
                     </div>
@@ -130,21 +160,16 @@ const Home = () => {
               </div>
             </div>
             <div className={styles.desc}>
-              Patchworks by Cameo Pass is an art collection that features over 15 unique and
-              well-known artists, and a never-before-seen art mechanic involving the splitting of
-              each art piece. Co-curated by Andrew Wang, one of web3's well-known storytellers and
-              artists, Patchworks was created to bring a new version of art collecting to the
-              forefront. Each piece was specifically created to be cut into as many as 30 individual
-              pieces that stand on their own. When mint pass holders exchange...
+              {nftDetail.nftCollectionDesc}
             </div>
             <div className={styles.mintProgress}>
-              <div className={styles.b1}>40% Total Minted</div>
-              <div className={styles.b2}>400/1000</div>
+              <div className={styles.b1}>{nftDetail.minted/nftDetail.nftCollectionSupply*100}% Total Minted</div>
+              <div className={styles.b2}>{nftDetail.minted}/{nftDetail.nftCollectionSupply}</div>
             </div>
             <div className={styles.privateSale}>
               <div className={styles.b1}>
-                <div className={styles.t1}>Private Sale (89 items remaining)</div>
-                <div className={styles.t2}>0.1 SUI | Max 2 per wallet</div>
+                <div className={styles.t1}>Private Sale ({nftDetail.nftCollectionSupply-nftDetail.minted} items remaining)</div>
+                <div className={styles.t2}>{nftDetail.price} SUI | Max 2 per wallet</div>
               </div>
               <div className={styles.b2}>
                 <div className={styles.t1}>-</div>
@@ -226,7 +251,7 @@ const Home = () => {
                 )
               })}
             </div>
-            : <div className={styles.questionList}></div>}
+            : <div className={styles.questionList}>{nftDetail.nftCollectionRoadmap}</div>}
         </div>
         <div className='accordion-card'>
           <AccordionCard defaultExpanded={true} />

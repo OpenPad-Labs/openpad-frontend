@@ -17,11 +17,7 @@ export const getBanner = async () => {
 }
 export const getNftDetail = async (params) => {
   try {
-    const res = await axios.post(`${BaseUrl}/nft/detail`,
-      {
-        nftCollectionAddress: '0x670d854c7da9e7fa55c1958a1aeb368b48496020',
-        nftCollectionId: '12',
-      }
+    const res = await axios.post(`${BaseUrl}/nft/detail`,params
     )
     console.log('res', res);
     if (res?.data?.success) {
