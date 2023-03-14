@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styles from './index.module.scss'
 import { Box, Tooltip, Accordion, AccordionSummary, Typography, AccordionDetails } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -9,6 +9,10 @@ const AccordionCard = ({
   time = 'Active | Ends in 01d 08h 08m 23s',
   defaultExpanded = false
 }) => {
+  const [defaultExpandedFlag, setDefaultExpandedFlag] = useState(defaultExpanded);
+  const handleExpanded = event => {
+    setDefaultExpandedFlag(!defaultExpandedFlag)
+  }
   return (
     <Accordion
       className='Accordion'
@@ -18,50 +22,56 @@ const AccordionCard = ({
         borderRadius: '12px !important'
       }}
       defaultExpanded={defaultExpanded}
+      onChange={handleExpanded}
     >
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon sx={{
-          width: '30px',
-          height: '30px',
-          color: '#fff'
-        }} />}
-        aria-controls="panel1a-content"
-      >
-        <Box
-          className={styles.title}
-          sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: "space-between",
-            width: '100%',
-            background: ' #343444',
-            alignItems: 'center',
-            '@media (max-width:750px)': {
-              flexDirection: 'column',
-              alignItems: 'flex-start'
-            }
-          }}
+      <div>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon sx={{
+            width: '30px',
+            height: '30px',
+            color: '#fff'
+          }} />}
+          aria-controls="panel1a-content"
         >
-          <div className={styles.accordion}>{title}</div>
-          <div className={styles.aaccordionTime}>
-            <Tooltip
-              title={
-                <Box sx={{
-                  background: '#fff',
-                  padding: '7px 10px',
-                  fontSize: 16,
-                }}>
-                  End Date: Jan 23 2023 at 8:00AM GMT+8
-                </Box>
+          <Box
+            className={styles.title}
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: "space-between",
+              width: '100%',
+              background: ' #343444',
+              alignItems: 'center',
+              '@media (max-width:750px)': {
+                // flexDirection: 'column',
+                alignItems: 'flex-start'
               }
-              placement="top-end"
-            >
-              <div className={styles.statusBar}>{time}</div>
-            </Tooltip>
-            <img className={styles.arrow} />
-          </div>
-        </Box>
-      </AccordionSummary>
+            }}
+          >
+            <div className={styles.accordion}>{title}</div>
+            <div className={styles.aaccordionTime}>
+              <img className={styles.arrow} />
+            </div>
+          </Box>
+          
+        </AccordionSummary>
+        <div className={defaultExpandedFlag ? '' : styles.statusBarTrue}>
+          <Tooltip
+            title={
+              <Box sx={{
+                background: '#fff',
+                padding: '7px 10px',
+                fontSize: 16,
+              }}>
+                End Date: Jan 23 2023 at 8:00AM GMT+8
+              </Box>
+            }
+            placement="top-end"
+          >
+            <div className={styles.statusBar}>{time}</div>
+          </Tooltip>
+        </div>
+      </div>
       <AccordionDetails>
         <Typography
           sx={{
@@ -85,10 +95,10 @@ const AccordionCard = ({
         </div>
         <div className={styles.btnBox}>
           <div className={styles.checkBtn}>Check Eligibility</div>
-          <div className={styles.notifyBtn}>
+          {/* <div className={styles.notifyBtn}>
             <img src={notifyBtn} alt='' />
             <span>Notify Me</span>
-          </div>
+          </div> */}
         </div>
       </AccordionDetails>
     </Accordion >
