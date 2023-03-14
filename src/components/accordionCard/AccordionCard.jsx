@@ -15,7 +15,7 @@ const AccordionCard = ({
     const timer = window.setInterval(() => {
       var dateBegin = new Date();//获取当前时间
       var dateEnd = new Date(1680739200000);//将-转化为/，使用new Date
-      var dateDiff = dateEnd.getTime() - dateBegin.getTime();//时间差的毫秒数1
+      var dateDiff = dateEnd.getTime() - dateBegin.getTime();//时间差的毫秒数
       var dayDiff = Math.floor(dateDiff / (24 * 3600 * 1000));//计算出相差天数
       var leave1=dateDiff%(24*3600*1000)    //计算天数后剩余的毫秒数
       var hours=Math.floor(leave1/(3600*1000))//计算出小时数
