@@ -255,7 +255,7 @@ const Home = () => {
         <div className={styles.firstContent}>
           <div className={styles.left}>
             <div className={styles.swiper}>
-              <img src={dogeAvatar} alt='' />
+              <img src={nftDetail.cover} alt=''/>
             </div>
           </div>
           <div className={styles.right}>
