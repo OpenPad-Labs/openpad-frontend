@@ -31,6 +31,7 @@ const Home = () => {
   const [bannerList, setBannerList] = useState([])
   const history = useNavigate()
   const [activeTab, setActiveTab] = useState(0)
+  const [stepNum, setStepNum] = useState(1)
   const defaultQuestionList = [
     {
       title: 'What is an NFT?',
@@ -125,12 +126,45 @@ const Home = () => {
   }
 
   useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
     initData()
     checkEligibility()
   }, [])
 
   const goProductDetail = () => {
     history(`/product-detail`)
+  }
+
+  // 步进器-减
+  const subtractStep = () => {
+    if (stepNum == '') return
+    if (stepNum*1 > 1) {
+      setStepNum(stepNum*1 - 1)
+    }else {
+      setStepNum(1)
+    }
+  }
+
+  // 步进器-加
+  const addStep = () => {
+    if (stepNum == '') {
+      setStepNum(1)
+    }else {
+      setStepNum(stepNum*1 + 1)
+    }
+  }
+
+  // 步进器-输入不可输入非数字
+  const stepInput = event => {
+    let val = event.nativeEvent.target.value
+    val = val.replace(/[^0-9]/g,'')
+    if (val <= 0) {
+      val = 1
+    }
+    setStepNum(val)
   }
 
   const FirstContent = () => {
@@ -145,7 +179,13 @@ const Home = () => {
           <div className={styles.right}>
             <div className={styles.title}>{nftDetail.nftCollectionName}</div>
             <div className={styles.box1}>
-              <img className={styles.userInfoIcon} src={userInfoIcon} alt='' />
+              <div className={styles.userBox}>
+                <img className={styles.userInfoIcon} src={nftDetail.nftCollectionIcon} alt='' />
+                <div className={styles.userInfo}>
+                  <span className={styles.userInfoTitle}>By</span>
+                  <span className={styles.userInfoTeam}>{nftDetail.nftCollectionTeam}</span>
+                </div>
+              </div>
               <div className={styles.platformBox}>
                 {platformList.map((item, index) => {
                   return (
@@ -163,7 +203,7 @@ const Home = () => {
               {nftDetail.nftCollectionDesc}
             </div>
             <div className={styles.mintProgress}>
-              <div className={styles.b1}>{nftDetail.minted/nftDetail.nftCollectionSupply*100}% Total Minted</div>
+              <div className={styles.b1} style={{width: nftDetail.minted/nftDetail.nftCollectionSupply*100 + "%"}}>{nftDetail.minted/nftDetail.nftCollectionSupply*100}% Total Minted</div>
               <div className={styles.b2}>{nftDetail.minted}/{nftDetail.nftCollectionSupply}</div>
             </div>
             <div className={styles.privateSale}>
@@ -172,9 +212,9 @@ const Home = () => {
                 <div className={styles.t2}>{nftDetail.price} SUI | Max 2 per wallet</div>
               </div>
               <div className={styles.b2}>
-                <div className={styles.t1}>-</div>
-                <input type='text' />
-                <div className={styles.t2}>+</div>
+                <div onClick={subtractStep} className={styles.t1}>-</div>
+                <input value={stepNum} onChange={stepInput} type='text' />
+                <div onClick={addStep} className={styles.t2}>+</div>
               </div>
             </div>
 
@@ -219,7 +259,7 @@ const Home = () => {
 
     return (
       <div className={styles.sencondContent}>
-        <div className={styles.box1}>
+        {/* <div className={styles.box1}>
           <div className={styles.tabList}>
             {tabList.map((item, index) => {
               return (
@@ -252,11 +292,29 @@ const Home = () => {
               })}
             </div>
             : <div className={styles.questionList}>{nftDetail.nftCollectionRoadmap}</div>}
-        </div>
-        <div className='accordion-card'>
-          <AccordionCard defaultExpanded={true} />
-          <AccordionCard title="Airdrop" />
-          <AccordionCard title='Public Sale' />
+        </div> */}
+        <div className={styles.accordionCard}>
+          <AccordionCard 
+            price={nftDetail.privateSalePrice} 
+            detail={nftDetail.privateSaleText}
+            startTime={nftDetail.privateSaleStartTime}
+            endTime={nftDetail.privateSaleEndTime}
+            defaultExpanded={true} 
+          />
+          <AccordionCard 
+            price={nftDetail.airDropPrice} 
+            detail={nftDetail.airDropText}
+            startTime={nftDetail.airDropStartTime}
+            endTime={nftDetail.airDropEndTime}
+            title="Airdrop"
+          />
+          <AccordionCard 
+            price={nftDetail.publicSalePrice}
+            detail={nftDetail.publicSaleText}
+            startTime={nftDetail.publicSaleStartTime}
+            endTime={nftDetail.publicEndTime}
+            title='Public Sale'
+          />
         </div>
       </div>
     )
