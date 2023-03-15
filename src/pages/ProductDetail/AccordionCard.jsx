@@ -7,6 +7,10 @@ import notifyBtn from '../../assets/img/page/product_detail/notifyBtn.svg'
 const AccordionCard = ({
   title = "Private Sale",
   time = 'Active | Ends in 01d 08h 08m 23s',
+  price = '0.1',
+  startTime = '',
+  endTime = '',
+  detail = '',
   defaultExpanded = false
 }) => {
   const [defaultExpandedFlag, setDefaultExpandedFlag] = useState(defaultExpanded);
@@ -80,10 +84,10 @@ const AccordionCard = ({
             fontWeight: 400,
             fontSize: '16px',
             mb: 2
-          }}>0.1 SUI | Max 2 per wallet</Typography>
-        <div className={styles.b3}>
+          }}>{ price } SUI | Max 2 per wallet</Typography>
+        <div className={styles.paragraph}>
           <p>Whitelist requirement:</p>
-          <p>1.You need to follow @NFTPROJ on Twitter</p>
+          {/* <p>1.You need to follow @NFTPROJ on Twitter</p>
           <p>
             2.You need to obtain Genie, King role in @NFTPROJ Discord server Click here to
             view the whitelist
@@ -91,7 +95,8 @@ const AccordionCard = ({
           <p>
             PS: Members of Maxi Pad will be automatically added to the whitelist. View our
             membership policy here.
-          </p>
+          </p> */}
+          { detail }
         </div>
         <div className={styles.btnBox}>
           <div className={styles.checkBtn}>Check Eligibility</div>
