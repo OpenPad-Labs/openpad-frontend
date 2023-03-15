@@ -30,8 +30,12 @@
           line-height: 73px;
           display: flex;
           align-items: center;
-
           color: #ffffff;
+          @media (max-width:750px) {
+            font-size: 24px;
+            line-height: 30px;
+            margin-top: 26px;
+          }
         }
 
         .box1 {
@@ -40,6 +44,7 @@
 
           @media (max-width:750px) {
             flex-direction: column;
+            align-items: flex-start;
           }
 
           .userBox {
@@ -124,6 +129,7 @@
 
           @media (max-width:750px) {
             width: calc(100vw - 40px);
+            margin-top: 10px;
           }
         }
 
@@ -143,6 +149,7 @@
 
           @media (max-width:750px) {
             width: calc(100vw - 40px);
+            margin-top: 20px;
           }
 
           .b1 {
@@ -189,6 +196,11 @@
           align-items: center;
           justify-content: space-between;
           margin-top: 52px;
+          @media (max-width:750px) {
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 20px;
+          }
 
           .b1 {
             .t1 {
@@ -237,6 +249,10 @@
             font-weight: 700;
             font-size: 15px;
             color: #FFFFFF;
+            @media (max-width:750px) {
+              width: 100%;
+              margin-top: 20px;
+            }
 
             input {
               font-family: 'Montserrat';
@@ -282,7 +298,10 @@
           color: #FFFFFF;
 
           @media (max-width:750px) {
-            width: calc(100vw - 50px);
+            // width: calc(100vw - 50px);
+            width: 100%;
+            margin-top: 20px;
+            margin-right: 0;
           }
 
           .icon {
