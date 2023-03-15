@@ -87,44 +87,45 @@ const AccordionCard = ({
           }} />}
           aria-controls="panel1a-content"
         >
-          <Box
-            className={styles.title}
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: "space-between",
-              width: '100%',
-              background: ' #343444',
-              alignItems: 'center',
-              '@media (max-width:750px)': {
-                // flexDirection: 'column',
-                alignItems: 'flex-start'
-              }
-            }}
-          >
-            <div className={styles.accordion}>{title}</div>
-            <div className={styles.aaccordionTime}>
-              <img className={styles.arrow} />
+          <div className={styles.accordionSummary}>
+            <Box
+              className={styles.title}
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: "space-between",
+                width: '100%',
+                background: ' #343444',
+                alignItems: 'center',
+                '@media (max-width:750px)': {
+                  // flexDirection: 'column',
+                  alignItems: 'flex-start'
+                }
+              }}
+            >
+              <div className={styles.accordion}>{title}</div>
+              <div className={styles.aaccordionTime}>
+                <img className={styles.arrow} />
+              </div>
+            </Box>
+            <div className={`${styles.statusBarFalse} ${defaultExpandedFlag ? '' : styles.statusBarTrue}`}>
+              <Tooltip
+                title={
+                  <Box sx={{
+                    background: '#fff',
+                    padding: '7px 10px',
+                    fontSize: 16,
+                  }}>
+                    {timeStrTips}
+                  </Box>
+                }
+                placement="top-end"
+              >
+                <div className={styles.statusBar}>{timeStr}</div>
+              </Tooltip>
             </div>
-          </Box>
-          
+          </div>
         </AccordionSummary>
-        <div className={defaultExpandedFlag ? '' : styles.statusBarTrue}>
-          <Tooltip
-            title={
-              <Box sx={{
-                background: '#fff',
-                padding: '7px 10px',
-                fontSize: 16,
-              }}>
-                {timeStrTips}
-              </Box>
-            }
-            placement="top-end"
-          >
-            <div className={styles.statusBar}>{timeStr}</div>
-          </Tooltip>
-        </div>
       </div>
       <AccordionDetails>
         <Typography

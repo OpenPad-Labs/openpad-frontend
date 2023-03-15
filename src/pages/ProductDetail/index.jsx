@@ -30,8 +30,7 @@ const Home = () => {
   const [nftDetail, setNftDetail] = useState([])
   const [bannerList, setBannerList] = useState([])
   const history = useNavigate()
-  const [activeTab, setActiveTab] = useState(0)
-  const [stepNum, setStepNum] = useState(1)
+  
   const defaultQuestionList = [
     {
       title: 'What is an NFT?',
@@ -55,8 +54,6 @@ const Home = () => {
       content: ''
     }
   ]
-
-  const [questionList, setQuestionList] = useState(defaultQuestionList)
 
   const platformList = [
     // {
@@ -121,7 +118,6 @@ const Home = () => {
         url: nftResult.telegram
       })
     }
-
     setNftDetail(nftResult)
   }
 
@@ -138,36 +134,36 @@ const Home = () => {
     history(`/product-detail`)
   }
 
-  // 步进器-减
-  const subtractStep = () => {
-    if (stepNum == '') return
-    if (stepNum*1 > 1) {
-      setStepNum(stepNum*1 - 1)
-    }else {
-      setStepNum(1)
-    }
-  }
-
-  // 步进器-加
-  const addStep = () => {
-    if (stepNum == '') {
-      setStepNum(1)
-    }else {
-      setStepNum(stepNum*1 + 1)
-    }
-  }
-
-  // 步进器-输入不可输入非数字
-  const stepInput = event => {
-    let val = event.nativeEvent.target.value
-    val = val.replace(/[^0-9]/g,'')
-    if (val <= 0) {
-      val = 1
-    }
-    setStepNum(val)
-  }
-
   const FirstContent = () => {
+    const [stepNum, setStepNum] = useState(1)
+    // 步进器-减
+    const subtractStep = () => {
+      if (stepNum == '') return
+      if (stepNum*1 > 1) {
+        setStepNum(stepNum*1 - 1)
+      }else {
+        setStepNum(1)
+      }
+    }
+
+    // 步进器-加
+    const addStep = () => {
+      if (stepNum == '') {
+        setStepNum(1)
+      }else {
+        setStepNum(stepNum*1 + 1)
+      }
+    }
+
+    // 步进器-输入不可输入非数字
+    const stepInput = event => {
+      let val = event.nativeEvent.target.value
+      val = val.replace(/[^0-9]/g,'')
+      if (val <= 0) {
+        val = 1
+      }
+      setStepNum(val)
+    }
     return (
       <>
         <div className={styles.firstContent}>
@@ -203,7 +199,9 @@ const Home = () => {
               {nftDetail.nftCollectionDesc}
             </div>
             <div className={styles.mintProgress}>
-              <div className={styles.b1} style={{width: nftDetail.minted/nftDetail.nftCollectionSupply*100 + "%"}}>{nftDetail.minted/nftDetail.nftCollectionSupply*100}% Total Minted</div>
+              <div className={styles.b1} style={{width: nftDetail.minted/nftDetail.nftCollectionSupply*100 + "%"}}>
+                <span>{nftDetail.minted/nftDetail.nftCollectionSupply*100}% Total Minted</span>
+              </div>
               <div className={styles.b2}>{nftDetail.minted}/{nftDetail.nftCollectionSupply}</div>
             </div>
             <div className={styles.privateSale}>
@@ -228,21 +226,25 @@ const Home = () => {
     )
   }
 
-  const onTabClick = (item, index) => {
-    setActiveTab(index)
-  }
+  
 
-  const onQuestionClick = (item, index) => {
-    questionList[index].checked = !item.checked
-    setQuestionList([...questionList])
-  }
+  
 
   const SencondContent = () => {
+    const [activeTab, setActiveTab] = useState(0)
+    const [questionList, setQuestionList] = useState(defaultQuestionList)
+    const onTabClick = (item, index) => {
+      setActiveTab(index)
+    }
+    const onQuestionClick = (item, index) => {
+      questionList[index].checked = !item.checked
+      setQuestionList([...questionList])
+    }
     const tabList = [
-      {
-        name: 'OverView',
-        key: 'OverView'
-      },
+      // {
+      //   name: 'OverView',
+      //   key: 'OverView'
+      // },
       {
         name: 'Roadmap',
         key: 'Roadmap'
@@ -259,7 +261,7 @@ const Home = () => {
 
     return (
       <div className={styles.sencondContent}>
-        {/* <div className={styles.box1}>
+        <div className={styles.box1}>
           <div className={styles.tabList}>
             {tabList.map((item, index) => {
               return (
@@ -273,7 +275,7 @@ const Home = () => {
               )
             })}
           </div>
-          {activeTab === 0
+          {tabList[activeTab].key === 'OverView'
             ? <div className={styles.questionList}>
               {questionList.map((item, index) => {
                 return (
@@ -292,7 +294,7 @@ const Home = () => {
               })}
             </div>
             : <div className={styles.questionList}>{nftDetail.nftCollectionRoadmap}</div>}
-        </div> */}
+        </div>
         <div className={styles.accordionCard}>
           <AccordionCard 
             price={nftDetail.privateSalePrice} 
