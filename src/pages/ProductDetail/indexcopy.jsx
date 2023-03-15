@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, {memo, useEffect, useState} from 'react'
 import styles from './index.module.scss'
 import userInfoIcon from '../../assets/img/page/home/userInfo.png'
 import rightArrow from '../../assets/img/page/home/rightArrow.png'
@@ -6,12 +6,12 @@ import dogeAvatar from '../../assets/img/page/home/suibear.webp'
 import listItemDemo from '../../assets/img/page/home/list-item-demo.png'
 import chevron_right from '../../assets/img/page/home/chevron_right.png'
 import categoryIcon from '../../assets/img/page/home/category.png'
-import { Pagination } from '@mui/material'
+import {Pagination} from '@mui/material'
 import sortIcon from '../../assets/img/page/home/sort.png'
-import { getBanner, getNftDetail, getNftList } from 'src/service/home'
+import {getBanner, getNftDetail, getNftList} from 'src/service/home'
 import Slider from 'react-slick'
-import { Box, Tooltip, Accordion, AccordionSummary, Typography, AccordionDetails } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
+import {Box, Tooltip, Accordion, AccordionSummary, Typography, AccordionDetails} from '@mui/material'
+import {useNavigate} from 'react-router-dom'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import netIcon from '../../assets/img/page/product_detail/net.png'
 import discordIcon from '../../assets/img/page/product_detail/discord.png'
@@ -22,9 +22,9 @@ import cartIcon from '../../assets/img/page/product_detail/cartIcon.png'
 import notifyBtn from '../../assets/img/page/product_detail/notifyBtn.svg'
 import classNames from 'classnames'
 import ArrowDownIcon from '../../assets/img/page/product_detail/arrowDown.png'
-import { fontSize } from '@mui/system'
+import {fontSize} from '@mui/system'
 import AccordionCard from './AccordionCard'
-import { checkEligibility } from '../../service/mint'
+import {checkEligibility} from '../../service/mint'
 import {useWallet} from "@suiet/wallet-kit";
 import {devnetConnection, JsonRpcProvider} from "@mysten/sui.js";
 
@@ -32,7 +32,7 @@ const Home = () => {
   const [nftDetail, setNftDetail] = useState([])
   const [bannerList, setBannerList] = useState([])
   const history = useNavigate()
-
+  const [activeTab, setActiveTab] = useState(0)
   const defaultQuestionList = [
     {
       title: 'What is an NFT?',
@@ -56,6 +56,8 @@ const Home = () => {
       content: ''
     }
   ]
+
+  const [questionList, setQuestionList] = useState(defaultQuestionList)
 
   const platformList = [
     // {
@@ -92,42 +94,39 @@ const Home = () => {
       nftCollectionId: '22222'
     })
     // console.log(nList)
-    if (nftResult.website!=null){
+    if (nftResult.website != null) {
       platformList.add({
         name: 'Net',
         icon: netIcon,
         url: nftResult.website
       })
     }
-    if (nftResult.discord!=null){
+    if (nftResult.discord != null) {
       platformList.add({
         name: 'Discord',
         icon: discordIcon,
         url: nftResult.discord
       })
     }
-    if (nftResult.twitter!=null){
+    if (nftResult.twitter != null) {
       platformList.add({
         name: 'Twitter',
         icon: twitterIcon,
         url: nftResult.twitter
       })
     }
-   if (nftResult.telegram!=null){
+    if (nftResult.telegram != null) {
       platformList.add({
         name: 'Telegram',
         icon: telegramIcon,
         url: nftResult.telegram
       })
     }
+
     setNftDetail(nftResult)
   }
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
     initData()
     checkEligibility()
   }, [])
@@ -136,6 +135,60 @@ const Home = () => {
     history(`/product-detail`)
   }
 
+  const FirstContent = () => {
+    return (
+      <>
+        <div className={styles.firstContent}>
+          <div className={styles.left}>
+            <div className={styles.swiper}>
+              <img src={nftDetail.cover} alt=''/>
+            </div>
+          </div>
+          <div className={styles.right}>
+            <div className={styles.title}>{nftDetail.nftCollectionName}</div>
+            <div className={styles.box1}>
+              <img className={styles.userInfoIcon} src={userInfoIcon} alt=''/>
+              <div className={styles.platformBox}>
+                {platformList.map((item, index) => {
+                  return (
+                    <div className={styles.platformItem} key={index} onClick={() => {
+                      window.open(nftDetail.url);
+                    }}>
+                      <img className={styles.platformIcon} src={item.icon} alt=''/>
+                      {/* <span className={styles.platformName}>{item.name}</span> */}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+            <div className={styles.desc}>
+              {nftDetail.nftCollectionDesc}
+            </div>
+            <div className={styles.mintProgress}>
+              <div className={styles.b1}>{nftDetail.minted / nftDetail.nftCollectionSupply * 100}% Total Minted</div>
+              <div className={styles.b2}>{nftDetail.minted}/{nftDetail.nftCollectionSupply}</div>
+            </div>
+            <div className={styles.privateSale}>
+              <div className={styles.b1}>
+                <div className={styles.t1}>Private Sale ({nftDetail.nftCollectionSupply - nftDetail.minted} items remaining)</div>
+                <div className={styles.t2}>{nftDetail.price} SUI | Max 2 per wallet</div>
+              </div>
+              <div className={styles.b2}>
+                <div className={styles.t1}>-</div>
+                <input type='text'/>
+                <div className={styles.t2}>+</div>
+              </div>
+            </div>
+
+            <div className={styles.viewDetailBtn} onClick={mintNFT}>
+              <img className={styles.icon} src={cartIcon} alt=''/>
+              <span>Mint now</span>
+            </div>
+          </div>
+        </div>
+      </>
+    )
+  }
   const wallet = useWallet();
 
   const mintNFT = async () => {
@@ -220,117 +273,22 @@ const Home = () => {
     });
   }
 
-  const FirstContent = () => {
-    const [stepNum, setStepNum] = useState(1)
-    // 步进器-减
-    const subtractStep = () => {
-      if (stepNum == '') return
-      if (stepNum*1 > 1) {
-        setStepNum(stepNum*1 - 1)
-      }else {
-        setStepNum(1)
-      }
-    }
-
-    // 步进器-加
-    const addStep = () => {
-      if (stepNum == '') {
-        setStepNum(1)
-      }else {
-        setStepNum(stepNum*1 + 1)
-      }
-    }
-
-    // 步进器-输入不可输入非数字
-    const stepInput = event => {
-      let val = event.nativeEvent.target.value
-      val = val.replace(/[^0-9]/g,'')
-      if (val <= 0) {
-        val = 1
-      }
-      setStepNum(val)
-    }
-    return (
-      <>
-        <div className={styles.firstContent}>
-          <div className={styles.left}>
-            <div className={styles.swiper}>
-              <img src={dogeAvatar} alt='' />
-            </div>
-          </div>
-          <div className={styles.right}>
-            <div className={styles.title}>{nftDetail.nftCollectionName}</div>
-            <div className={styles.box1}>
-              <div className={styles.userBox}>
-                <img className={styles.userInfoIcon} src={nftDetail.nftCollectionIcon} alt='' />
-                <div className={styles.userInfo}>
-                  <span className={styles.userInfoTitle}>By</span>
-                  <span className={styles.userInfoTeam}>{nftDetail.nftCollectionTeam}</span>
-                </div>
-              </div>
-              <div className={styles.platformBox}>
-                {platformList.map((item, index) => {
-                  return (
-                    <div className={styles.platformItem} key={index} onClick={() => {
-                      window.open(nftDetail.url);
-                    }}>
-                      <img className={styles.platformIcon} src={item.icon} alt='' />
-                      {/* <span className={styles.platformName}>{item.name}</span> */}
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-            <div className={styles.desc}>
-              {nftDetail.nftCollectionDesc}
-            </div>
-            <div className={styles.mintProgress}>
-              <div className={styles.b1} style={{width: nftDetail.minted/nftDetail.nftCollectionSupply*100 + "%"}}>
-                <span>{nftDetail.minted/nftDetail.nftCollectionSupply*100}% Total Minted</span>
-              </div>
-              <div className={styles.b2}>{nftDetail.minted}/{nftDetail.nftCollectionSupply}</div>
-            </div>
-            <div className={styles.privateSale}>
-              <div className={styles.b1}>
-                <div className={styles.t1}>Private Sale ({nftDetail.nftCollectionSupply-nftDetail.minted} items remaining)</div>
-                <div className={styles.t2}>{nftDetail.price} SUI | Max 2 per wallet</div>
-              </div>
-              <div className={styles.b2}>
-                <div onClick={subtractStep} className={styles.t1}>-</div>
-                <input value={stepNum} onChange={stepInput} type='text' />
-                <div onClick={addStep} className={styles.t2}>+</div>
-              </div>
-            </div>
-
-            <div className={styles.viewDetailBtn} onClick={mintNFT}>
-              <img className={styles.icon} src={cartIcon} alt='' />
-              <span>Mint now</span>
-            </div>
-          </div>
-        </div>
-      </>
-    )
+  const onTabClick = (item, index) => {
+    setActiveTab(index)
   }
 
-
-
-
+  const onQuestionClick = (item, index) => {
+    questionList[index].checked = !item.checked
+    setQuestionList([...questionList])
+  }
 
   const SencondContent = () => {
-    const [activeTab, setActiveTab] = useState(0)
-    const [questionList, setQuestionList] = useState(defaultQuestionList)
-    const onTabClick = (item, index) => {
-      setActiveTab(index)
-    }
-    const onQuestionClick = (item, index) => {
-      questionList[index].checked = !item.checked
-      setQuestionList([...questionList])
-    }
+    // {
+    //   name: 'OverView',
+    //   key: 'OverView'
+    // },
     const tabList = [
-      // {
-      //   name: 'OverView',
-      //   key: 'OverView'
-      // },
+
       {
         name: 'Roadmap',
         key: 'Roadmap'
@@ -361,48 +319,31 @@ const Home = () => {
               )
             })}
           </div>
-          {tabList[activeTab].key === 'OverView'
-            ? <div className={styles.questionList}>
-              {questionList.map((item, index) => {
-                return (
-                  <div
-                    key={index}
-                    className={classNames(styles.item, activeTab === index && styles.active)}
-                    onClick={() => onQuestionClick(item, index)}
-                  >
-                    <div className={styles.t1}>
-                      <span>{item.title}</span>
-                      <span>{item.checked ? '-' : '+'}</span>
-                    </div>
-                    {item.checked && <div className={styles.t2}>{item.content}</div>}
-                  </div>
-                )
-              })}
-            </div>
-            : <div className={styles.questionList}>{tabList[activeTab].key === 'Roadmap' ? nftDetail.nftCollectionRoadmap : tabList[activeTab].key === 'Team' ? nftDetail.team : nftDetail.faq}</div>}
+          {/*{activeTab === 0*/}
+          {/*  ? <div className={styles.questionList}>*/}
+          {/*    {questionList.map((item, index) => {*/}
+          {/*      return (*/}
+          {/*        <div*/}
+          {/*          key={index}*/}
+          {/*          className={classNames(styles.item, activeTab === index && styles.active)}*/}
+          {/*          onClick={() => onQuestionClick(item, index)}*/}
+          {/*        >*/}
+          {/*          <div className={styles.t1}>*/}
+          {/*            <span>{item.title}</span>*/}
+          {/*            <span>{item.checked ? '-' : '+'}</span>*/}
+          {/*          </div>*/}
+          {/*          {item.checked && <div className={styles.t2}>{item.content}</div>}*/}
+          {/*        </div>*/}
+          {/*      )*/}
+          {/*    })}*/}
+          {/*  </div>*/}
+          {/*  : }*/}
+          <div className={styles.questionList}>{activeTab === 0 ? nftDetail.nftCollectionRoadmap : activeTab === 1 ? nftDetail.team : nftDetail.faq}</div>
         </div>
-        <div className={styles.accordionCard}>
-          <AccordionCard
-            price={nftDetail.privateSalePrice}
-            detail={nftDetail.privateSaleText}
-            startTime={nftDetail.privateSaleStartTime}
-            endTime={nftDetail.privateSaleEndTime}
-            defaultExpanded={true}
-          />
-          <AccordionCard
-            price={nftDetail.airDropPrice}
-            detail={nftDetail.airDropText}
-            startTime={nftDetail.airDropStartTime}
-            endTime={nftDetail.airDropEndTime}
-            title="Airdrop"
-          />
-          <AccordionCard
-            price={nftDetail.publicSalePrice}
-            detail={nftDetail.publicSaleText}
-            startTime={nftDetail.publicSaleStartTime}
-            endTime={nftDetail.publicEndTime}
-            title='Public Sale'
-          />
+        <div className='accordion-card'>
+          <AccordionCard defaultExpanded={true}/>
+          <AccordionCard title="Airdrop"/>
+          <AccordionCard title='Public Sale'/>
         </div>
       </div>
     )
@@ -417,8 +358,8 @@ const Home = () => {
       <TodayPicks data={todayPickData} />
       <PopularCollection data={popularCollectionData} />
       <Create /> */}
-        <FirstContent />
-        <SencondContent />
+        <FirstContent/>
+        <SencondContent/>
       </div>
     </div>
   )

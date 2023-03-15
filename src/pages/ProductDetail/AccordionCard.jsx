@@ -3,6 +3,8 @@ import styles from './index.module.scss'
 import { Box, Tooltip, Accordion, AccordionSummary, Typography, AccordionDetails } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import notifyBtn from '../../assets/img/page/product_detail/notifyBtn.svg'
+import {devnetConnection, JsonRpcProvider} from "@mysten/sui.js";
+import {useWallet} from "@suiet/wallet-kit";
 
 const AccordionCard = ({
   title = "Private Sale",
@@ -14,9 +16,33 @@ const AccordionCard = ({
   defaultExpanded = false
 }) => {
   const [defaultExpandedFlag, setDefaultExpandedFlag] = useState(defaultExpanded);
+  const wallet = useWallet();
   const handleExpanded = event => {
     setDefaultExpandedFlag(!defaultExpandedFlag)
   }
+  const checkWhite = async () => {
+    //project id 0xbe63d945901e09f070384b77522bdf054f69ce3c
+    const provider = new JsonRpcProvider(devnetConnection);
+    // get tokens from the DevNet faucet server
+    const objects = await provider.getObject(
+      '0x60405284a4ad228225fca66c82d4af620d253789',
+    );
+    console.log()
+    const whiteList=objects?.details?.data?.fields?.listed?.fields?.contents
+    let inWhite=false
+    if (whiteList!==undefined){
+      for (let i = 0; i < whiteList.length; i++) {
+        const address=whiteList[i]
+        if (address===wallet?.account?.address){
+          inWhite=true
+        }
+      }
+    }
+    if (inWhite){
+      console.log('在白单')
+    }
+  }
+
   const [timeStr, setTimeStr] = useState('');
   const [timeStrTips, setTimeStrTips] = useState('');
 
@@ -149,7 +175,7 @@ const AccordionCard = ({
           </p> */}
           { detail }
         </div>
-        <div className={styles.btnBox}>
+        <div className={styles.btnBox} onClick={checkWhite}>
           <div className={styles.checkBtn}>Check Eligibility</div>
           {/* <div className={styles.notifyBtn}>
             <img src={notifyBtn} alt='' />
