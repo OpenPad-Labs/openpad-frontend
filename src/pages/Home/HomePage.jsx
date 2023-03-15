@@ -251,7 +251,7 @@ const Home = () => {
     return (
       <div className={styles.unComingList}>
         <div className={styles.title}>Ended ({endNftList.length || 0})</div>
-        <div className={styles.filter}>
+        {/* <div className={styles.filter}>
           <div className={styles.tagsBox}>
             <img className={styles.icon} src={categoryIcon} alt='' />
             <span>Tags: Game Fi, PFP</span>
@@ -260,7 +260,7 @@ const Home = () => {
             <img className={styles.icon} src={sortIcon} alt='' />
             <span>Sort By: Recently Added</span>
           </div>
-        </div>
+        </div> */}
 
         <div className={styles.list}>
           {endNftList.map((item, index) => {
