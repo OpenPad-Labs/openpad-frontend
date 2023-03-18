@@ -3,33 +3,35 @@ import styles from './index.module.scss'
 import { Box, Tooltip, Accordion, AccordionSummary, Typography, AccordionDetails } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import notifyBtn from '../../assets/img/page/product_detail/notifyBtn.svg'
-import {devnetConnection, JsonRpcProvider} from "@mysten/sui.js";
-import {useWallet} from "@suiet/wallet-kit";
+import { devnetConnection, JsonRpcProvider } from "@mysten/sui.js";
+import { useWallet } from "@suiet/wallet-kit";
 import AIGCModal from 'src/components/AIGC/AIGCModal'
 import Countdown from "react-countdown";
 
 const Completionist = () => <span>You are good to go!</span>;
 
-const renderer = ({ hours, minutes, seconds, completed }) => {
+const renderer = ({ days, hours, minutes, seconds, completed }) => {
   if (completed) {
     // Render a completed state
     return <Completionist />;
   } else {
     // Render a countdown
-    return <span>{hours}:{minutes}:{seconds}</span>;
+    return <span>start at: {days}d {hours}h {minutes}m {seconds}s</span>;
   }
 };
 
 const AccordionCard = ({
   title = "Private Sale",
   price = '0.1',
-  startTime ,
-  endTime ,
+  startTime,
+  endTime,
   detail = '',
   defaultExpanded = false,
-  contractAddress=''
+  contractAddress = ''
 }) => {
-  // console.log('startTime', startTime)
+  // console.log('startTime', Date.now() - startTime)
+  // console.log('endTime', Date.now() - endTime)
+
   const [defaultExpandedFlag, setDefaultExpandedFlag] = useState(defaultExpanded);
   const [open, setOpen] = useState(false);
   const [modalText, setModalText] = useState('');
@@ -51,27 +53,27 @@ const AccordionCard = ({
     );
     console.log(objects)
     let whiteList;
-    if (title==='Airdrop'){
-      whiteList=objects?.details?.data?.fields?.airdrop_list?.fields?.contents
-    }else {
-      whiteList=objects?.details?.data?.fields?.whitelist?.fields?.contents
+    if (title === 'Airdrop') {
+      whiteList = objects?.details?.data?.fields?.airdrop_list?.fields?.contents
+    } else {
+      whiteList = objects?.details?.data?.fields?.whitelist?.fields?.contents
     }
-    let inWhite=false
-    if (whiteList!==undefined){
+    let inWhite = false
+    if (whiteList !== undefined) {
       for (let i = 0; i < whiteList.length; i++) {
-        const address=whiteList[i].fields?.key
-        if (address===wallet?.account?.address){
-          inWhite=true
+        const address = whiteList[i].fields?.key
+        if (address === wallet?.account?.address) {
+          inWhite = true
         }
       }
     }
-    if (inWhite){
+    if (inWhite) {
       await setModalText(<><div>Congrats! You are eligible to mint!</div></>);
       setOpen(true)
-    }else {
-      await setModalText(<><div>Sorry! You are not on the list. <br/>
-        Click here to view the whitelist<br/>
-        If you believe that you should be on the list, please contact @NFTPROJ directly.<br/><br/>
+    } else {
+      await setModalText(<><div>Sorry! You are not on the list. <br />
+        Click here to view the whitelist<br />
+        If you believe that you should be on the list, please contact @NFTPROJ directly.<br /><br />
         Or, join Maxi Membership to enter the whitelist directly.</div></>);
       setOpen(true)
     }
@@ -169,25 +171,25 @@ const AccordionCard = ({
               </div>
             </Box>
             <div className={`${styles.statusBarFalse} ${defaultExpandedFlag ? '' : styles.statusBarTrue}`}>
-              {/* <Tooltip
+              <Tooltip
                 title={
                   <Box sx={{
                     background: '#fff',
                     padding: '7px 10px',
                     fontSize: 16,
                   }}>
-                    {timeStrTips}
+                    {'Start Date: ' + new Date(Date.now() + 500000000).toDateString()}
                   </Box>
                 }
                 placement="top-end"
               >
-                <div className={styles.statusBar}>{timeStr}</div>
-              </Tooltip> */}
-              Tooltip
-              <Countdown 
-                date={Date.now() + 500000000}
-                renderer={renderer}
-              />
+                <div className={styles.statusBar}>
+                  <Countdown
+                    date={Date.now() + 500000000}
+                    renderer={renderer}
+                  />
+                </div>
+              </Tooltip>
             </div>
           </div>
         </AccordionSummary>
@@ -200,7 +202,7 @@ const AccordionCard = ({
             fontWeight: 400,
             fontSize: '16px',
             mb: 2
-          }}>{ price } SUI | Max 2 per wallet</Typography>
+          }}>{price} SUI | Max 2 per wallet</Typography>
         <div className={styles.paragraph}>
           <p>Whitelist requirement:</p>
           {/* <p>1.You need to follow @NFTPROJ on Twitter</p>
@@ -212,17 +214,17 @@ const AccordionCard = ({
             PS: Members of Maxi Pad will be automatically added to the whitelist. View our
             membership policy here.
           </p> */}
-          { detail }
+          {detail}
         </div>
-        {title!=='Public Sale'? <div className={styles.btnBox} onClick={checkWhite}>
+        {title !== 'Public Sale' ? <div className={styles.btnBox} onClick={checkWhite}>
           <div className={styles.checkBtn}>Check Eligibility</div>
           {/* <div className={styles.notifyBtn}>
             <img src={notifyBtn} alt='' />
             <span>Notify Me</span>
           </div> */}
-        </div>:<div></div>}
+        </div> : <div></div>}
       </AccordionDetails>
-      <AIGCModal setOpen={setOpen} text={modalText} open={open} showResults={showResults}/>
+      <AIGCModal setOpen={setOpen} text={modalText} open={open} showResults={showResults} />
     </Accordion >
   )
 }
