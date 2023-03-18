@@ -7,18 +7,7 @@ import { devnetConnection, JsonRpcProvider } from "@mysten/sui.js";
 import { useWallet } from "@suiet/wallet-kit";
 import AIGCModal from 'src/components/AIGC/AIGCModal'
 import Countdown from "react-countdown";
-
-const Completionist = () => <span>You are good to go!</span>;
-
-const renderer = ({ days, hours, minutes, seconds, completed }) => {
-  if (completed) {
-    // Render a completed state
-    return <Completionist />;
-  } else {
-    // Render a countdown
-    return <span>start at: {days}d {hours}h {minutes}m {seconds}s</span>;
-  }
-};
+import MyCountdown from './MyCountdown';
 
 const AccordionCard = ({
   title = "Private Sale",
@@ -79,54 +68,53 @@ const AccordionCard = ({
     }
   }
 
+  // const [nowTime, setNowTime] = useState();
   // const [timeStr, setTimeStr] = useState('');
   // const [timeStrTips, setTimeStrTips] = useState('');
 
   // useEffect(() => {
-  //   const timer = window.setInterval(() => {
-  //     var dateBegin = new Date();//获取当前时间
-  //     let now = ''
-  //     let nowStr = ''
-  //     // 开始时间大于当前时间时 活动未开始 取开始时间
-  //     if (startTime*1 > Date.parse(dateBegin)) {
-  //       now = startTime*1
-  //       nowStr = 'Start'
-  //       setTimeStrTips('Start Date: ' + new Date(now).toDateString())
+  //   var dateBegin = new Date();//获取当前时间
+  //   let now = ''
+  //   let nowStr = ''
+  //   // 开始时间大于当前时间时 活动未开始 取开始时间
+  //   if (startTime * 1 > Date.parse(dateBegin)) {
+  //     now = startTime * 1
+  //     nowStr = 'Start'
+  //     setTimeStrTips('Start Date:')
+  //   }
+  //   // 当前时间大于开始时间 小于结束时间 活动已开始 未结束 取结束时间
+  //   if (startTime * 1 < Date.parse(dateBegin) && Date.parse(dateBegin) < endTime * 1) {
+  //     now = endTime * 1
+  //     nowStr = 'Ends'
+  //     setTimeStrTips('End Date:')
+  //   }
+  //   if (Date.parse(dateBegin) > endTime * 1) {
+  //     now = endTime * 1
+  //     setTimeStrTips('End Date: ')
+  //     nowStr = 'Closed'
+  //   }
+  //   setNowTime(now)
+  //   var dateEnd = new Date(now);//将-转化为/，使用new Date
+  //   var dateDiff = dateEnd.getTime() - dateBegin.getTime();//时间差的毫秒数
+  //   var dayDiff = Math.floor(dateDiff / (24 * 3600 * 1000));//计算出相差天数
+  //   var leave1 = dateDiff % (24 * 3600 * 1000)    //计算天数后剩余的毫秒数
+  //   var hours = Math.floor(leave1 / (3600 * 1000))//计算出小时数
+  //   //计算相差分钟数
+  //   var leave2 = leave1 % (3600 * 1000)    //计算小时数后剩余的毫秒数
+  //   var minutes = Math.floor(leave2 / (60 * 1000))//计算相差分钟数
+  //   //计算相差秒数
+  //   var leave3 = leave2 % (60 * 1000)      //计算分钟数后剩余的毫秒数
+  //   var seconds = Math.round(leave3 / 1000)
+  //   // console.log(dayDiff+"d", hours+"h",minutes+"m",seconds+"s");
+  //   if (nowStr === 'Closed') {
+  //     setTimeStr("Active | ")
+  //   } else {
+  //     if (Object.is(dayDiff, NaN)) {
+  //       setTimeStr("Active | ")
+  //     } else {
+  //       setTimeStr("Active | ")
   //     }
-  //     // 当前时间大于开始时间 小于结束时间 活动已开始 未结束 取结束时间
-  //     if (startTime*1 < Date.parse(dateBegin) && Date.parse(dateBegin) < endTime*1) {
-  //       now = endTime*1
-  //       nowStr = 'Ends'
-  //       setTimeStrTips('End Date: ' + new Date(now).toDateString())
-  //     }
-  //     if (Date.parse(dateBegin) > endTime*1) {
-  //       now = endTime*1
-  //       setTimeStrTips('End Date: ' + new Date(endTime*1).toDateString())
-  //       nowStr = 'Closed'
-  //     }
-  //     var dateEnd = new Date(now);//将-转化为/，使用new Date
-  //     var dateDiff = dateEnd.getTime() - dateBegin.getTime();//时间差的毫秒数
-  //     var dayDiff = Math.floor(dateDiff / (24 * 3600 * 1000));//计算出相差天数
-  //     var leave1=dateDiff%(24*3600*1000)    //计算天数后剩余的毫秒数
-  //     var hours=Math.floor(leave1/(3600*1000))//计算出小时数
-  //     //计算相差分钟数
-  //     var leave2=leave1%(3600*1000)    //计算小时数后剩余的毫秒数
-  //     var minutes=Math.floor(leave2/(60*1000))//计算相差分钟数
-  //     //计算相差秒数
-  //     var leave3=leave2%(60*1000)      //计算分钟数后剩余的毫秒数
-  //     var seconds=Math.round(leave3/1000)
-  //     // console.log(dayDiff+"d", hours+"h",minutes+"m",seconds+"s");
-  //     if (nowStr == 'Closed') {
-  //       setTimeStr("Active | "+ nowStr)
-  //       clearInterval(timer)
-  //     }else {
-  //       if (Object.is(dayDiff, NaN)) {
-  //         setTimeStr("Active | "+ nowStr +" in 0d 0h 0m 0s")
-  //       }else {
-  //         setTimeStr("Active | "+ nowStr +" in "+dayDiff+"d "+ hours+"h "+minutes+"m "+seconds+"s")
-  //       }
-  //     }
-  //   }, 1000);
+  //   }
 
   // }, []);
   return (
@@ -171,25 +159,10 @@ const AccordionCard = ({
               </div>
             </Box>
             <div className={`${styles.statusBarFalse} ${defaultExpandedFlag ? '' : styles.statusBarTrue}`}>
-              <Tooltip
-                title={
-                  <Box sx={{
-                    background: '#fff',
-                    padding: '7px 10px',
-                    fontSize: 16,
-                  }}>
-                    {'Start Date: ' + new Date(Date.now() + 500000000).toDateString()}
-                  </Box>
-                }
-                placement="top-end"
-              >
-                <div className={styles.statusBar}>
-                  <Countdown
-                    date={Date.now() + 500000000}
-                    renderer={renderer}
-                  />
-                </div>
-              </Tooltip>
+              <MyCountdown
+                start={Number(startTime)}
+                end={Number(endTime)}
+              />
             </div>
           </div>
         </AccordionSummary>
