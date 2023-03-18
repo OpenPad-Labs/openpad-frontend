@@ -1,30 +1,14 @@
 import React, {memo, useEffect, useState} from 'react'
 import styles from './index.module.scss'
-import userInfoIcon from '../../assets/img/page/home/userInfo.png'
-import rightArrow from '../../assets/img/page/home/rightArrow.png'
-import dogeAvatar from '../../assets/img/page/home/suibear.webp'
-import listItemDemo from '../../assets/img/page/home/list-item-demo.png'
-import chevron_right from '../../assets/img/page/home/chevron_right.png'
-import categoryIcon from '../../assets/img/page/home/category.png'
-import {Pagination} from '@mui/material'
-import sortIcon from '../../assets/img/page/home/sort.png'
 import {getBanner, getNftDetail, getNftList} from 'src/service/home'
-import Slider from 'react-slick'
-import {Box, Tooltip, Accordion, AccordionSummary, Typography, AccordionDetails} from '@mui/material'
 import {useNavigate,useParams} from 'react-router-dom'
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import netIcon from '../../assets/img/page/product_detail/net.png'
 import discordIcon from '../../assets/img/page/product_detail/discord.png'
 import twitterIcon from '../../assets/img/page/product_detail/twitter.png'
 import telegramIcon from '../../assets/img/page/product_detail/telegram.png'
-import noteIcon from '../../assets/img/page/product_detail/note.png'
 import cartIcon from '../../assets/img/page/product_detail/cartIcon.png'
-import notifyBtn from '../../assets/img/page/product_detail/notifyBtn.svg'
 import classNames from 'classnames'
-import ArrowDownIcon from '../../assets/img/page/product_detail/arrowDown.png'
-import {fontSize} from '@mui/system'
 import AccordionCard from './AccordionCard'
-import {checkEligibility} from '../../service/mint'
 import {useWallet} from "@suiet/wallet-kit";
 import {devnetConnection, JsonRpcProvider} from "@mysten/sui.js";
 import AIGCModal from 'src/components/AIGC/AIGCModal'
@@ -37,6 +21,7 @@ const Home = () => {
   const [open, setOpen] = useState(false);
   const [modalText, setModalText] = useState('');
   const [showResults, setShowResults] = useState(true);
+  const [stepNum, setStepNum] = useState(1)
 
   const defaultQuestionList = [
     {
@@ -92,8 +77,8 @@ const Home = () => {
   const params = useParams()
 
   const initData = async () => {
-    console.log(params) // {id: "2",name:"zora"}
-    console.log(params.address) // {id: "2",name:"zora"}
+    // console.log(params) // {id: "2",name:"zora"}
+    // console.log(params.address) // {id: "2",name:"zora"}
     // const bList = await getBanner()
     // setBannerList(bList)
     const nftResult = await getNftDetail({
@@ -128,39 +113,43 @@ const Home = () => {
         url: nftResult.telegram
       })
     }
+    // nftResult.airDropStartTime=1779024123855
+    // nftResult.airDropStartTime=1779024123855
     setNftDetail(nftResult)
+    queryMintCount(nftResult)
+
   }
 
-  useEffect(() => {
+  useEffect(async () => {
     window.scrollTo({
       top: 0,
       behavior: "smooth"
     });
-    initData()
-    queryMintCount()
+    await initData()
     // checkEligibility()
   }, [])
 
-  const goProductDetail = () => {
-    history(`/product-detail`)
-  }
-
   const wallet = useWallet();
 
-  const queryMintCount = async () => {
+  const queryMintCount = async (nftResult) => {
     //project id 0xbe63d945901e09f070384b77522bdf054f69ce3c
     const provider = new JsonRpcProvider(devnetConnection);
     // get tokens from the DevNet faucet server
+    // console.log(nftDetail)
     const objects = await provider.getObject(
-      '0xbe63d945901e09f070384b77522bdf054f69ce3c',
+      nftResult.nftCollectionAddress,
     );
     console.log(objects)
     const tempMintCount = objects?.details?.data?.fields?.art_sequence
+    console.log('tempMintCount',tempMintCount)
     setMintCount(tempMintCount)
   }
 
   const mintNFT = async () => {
-
+    await setModalText(<>
+      <div>Please confirm in your wallet...</div>
+    </>);
+    setOpen(true)
     const balanceObjectId = await getCoin()
     if (balanceObjectId === '') {
       await setModalText(<>
@@ -172,15 +161,11 @@ const Home = () => {
     const nowTime = Date.parse(new Date())
     if (nowTime > nftDetail.privateSaleStartTime * 1 && nowTime < nftDetail.privateSaleEndTime * 1) {
       //private sale time
-      await setModalText(<>
-        <div>Please confirm in your wallet...</div>
-      </>);
-      setOpen(true)
       const result=await preSaleNFT(balanceObjectId)
       if (result==='success'){
         setOpen(false)
         await setModalText(<>
-          <div>Congrats! You have successfully minted 2 NFTs. <br/><br/>
+          <div>Congrats! You have successfully minted {stepNum} NFTs. <br/><br/>
             Your NFTs will appear in your Profile page.
           </div>
         </>);
@@ -189,16 +174,22 @@ const Home = () => {
 
     } else if (nowTime > nftDetail.publicSaleStartTime * 1 && nowTime < nftDetail.publicEndTime * 1) {
       //public sale time
-      await setModalText(<>
-        <div>Please confirm in your wallet...</div>
-      </>);
-      setOpen(true)
       const result= await publicSale(balanceObjectId)
       if (result==='success') {
         setOpen(false)
         await setModalText(<>
-          <div>Congrats! You have successfully minted 2 NFTs. <br/><br/>
+          <div>Congrats! You have successfully minted {stepNum} NFTs. <br/><br/>
             Your NFTs will appear in your Profile page.
+          </div>
+        </>);
+        setOpen(true)
+      }
+    }else if (nowTime > nftDetail.airDropStartTime * 1 && nowTime < nftDetail.airDropEndTime * 1){
+      const result= airdropNFT()
+      if (result==='success') {
+        setOpen(false)
+        await setModalText(<>
+          <div>Congrats! Airdrop successfully
           </div>
         </>);
         setOpen(true)
@@ -221,6 +212,7 @@ const Home = () => {
     if (balanceList !== undefined) {
       for (let i = 0; i < balanceList.length; i++) {
         if (balanceList[i].balance > 0) {
+          console.log('balanceList[i].coinObjectId',balanceList[i].coinObjectId)
           inWhite = true
           balanceObjectId = balanceList[i].coinObjectId
           break
@@ -238,13 +230,14 @@ const Home = () => {
     console.log(111)
     try {
       const data = {
-        packageObjectId: '0x9981c8d3cd531ff4fc6be3059f33ca3435349002',
+        packageObjectId: '0xb3d40059ce34de8e077251b6bb98076dab663f79',
         module: 'nft',
         function: 'public_sale',
         typeArguments: [],
         arguments: [
           balanceObjectId,
-          nftDetail.nftCollectionAddress
+          nftDetail.nftCollectionAddress,
+          stepNum+""
         ],
         gasBudget: 10000,
       };
@@ -256,6 +249,7 @@ const Home = () => {
       });
       return 'success'
     } catch (error) {
+      console.log(error)
       await setModalText(<>
         <div>mint error</div>
       </>)
@@ -265,17 +259,46 @@ const Home = () => {
   }
 
   const preSaleNFT = async (balanceObjectId) => {
-    console.log(111)
     try {
     const data = {
-      packageObjectId: '0x9981c8d3cd531ff4fc6be3059f33ca3435349002',
+      packageObjectId: '0xb3d40059ce34de8e077251b6bb98076dab663f79',
       module: 'nft',
       function: 'presale',
       typeArguments: [],
       arguments: [
         balanceObjectId,
         nftDetail.nftCollectionAddress,
+        stepNum+""
         //todo 白名单
+        // nftDetail.nftCollectionAddress
+      ],
+      gasBudget: 10000,
+    };
+    const resData = await wallet.signAndExecuteTransaction({
+      transaction: {
+        kind: 'moveCall',
+        data
+      }
+    });
+    return 'success'
+  } catch (error) {
+      console.log(error)
+    await setModalText(<>
+      <div>mint error</div>
+    </>)
+    setOpen(true)
+  }
+    return 'error'
+  }
+
+  const airdropNFT = async () => {
+    try {
+    const data = {
+      packageObjectId: '0xb3d40059ce34de8e077251b6bb98076dab663f79',
+      module: 'nft',
+      function: 'airdrop',
+      typeArguments: [],
+      arguments: [
         nftDetail.nftCollectionAddress
       ],
       gasBudget: 10000,
@@ -288,6 +311,7 @@ const Home = () => {
     });
     return 'success'
   } catch (error) {
+      console.log(error)
     await setModalText(<>
       <div>mint error</div>
     </>)
@@ -297,7 +321,6 @@ const Home = () => {
   }
 
   const FirstContent = () => {
-    const [stepNum, setStepNum] = useState(1)
     // 步进器-减
     const subtractStep = () => {
       if (stepNum == '') return
@@ -361,14 +384,14 @@ const Home = () => {
               {nftDetail.nftCollectionDesc}
             </div>
             <div className={styles.mintProgress}>
-              <div className={styles.b1} style={{width: nftDetail.mintCount / nftDetail.nftCollectionSupply * 100 + "%"}}>
-                <span>{nftDetail.mintCount / nftDetail.nftCollectionSupply * 100}% Total Minted</span>
+              <div className={styles.b1} style={{width: mintCount / nftDetail.nftCollectionSupply * 100 + "%"}}>
+                <span>{mintCount / nftDetail.nftCollectionSupply * 100}% Total Minted</span>
               </div>
-              <div className={styles.b2}>{nftDetail.mintCount}/{nftDetail.nftCollectionSupply}</div>
+              <div className={styles.b2}>{mintCount}/{nftDetail.nftCollectionSupply}</div>
             </div>
             <div className={styles.privateSale}>
               <div className={styles.b1}>
-                <div className={styles.t1}>Private Sale ({nftDetail.nftCollectionSupply - nftDetail.mintCount} items remaining)</div>
+                <div className={styles.t1}>Private Sale ({nftDetail.nftCollectionSupply - mintCount} items remaining)</div>
                 <div className={styles.t2}>{nftDetail.price} SUI | Max 2 per wallet</div>
               </div>
               <div className={styles.b2}>
@@ -463,6 +486,7 @@ const Home = () => {
             startTime={nftDetail.privateSaleStartTime}
             endTime={nftDetail.privateSaleEndTime}
             defaultExpanded={true}
+            contractAddress={nftDetail.nftCollectionAddress}
           />
           <AccordionCard
             price={nftDetail.airDropPrice}
@@ -470,6 +494,7 @@ const Home = () => {
             startTime={nftDetail.airDropStartTime}
             endTime={nftDetail.airDropEndTime}
             title="Airdrop"
+            contractAddress={nftDetail.nftCollectionAddress}
           />
           <AccordionCard
             price={nftDetail.publicSalePrice}
@@ -477,6 +502,7 @@ const Home = () => {
             startTime={nftDetail.publicSaleStartTime}
             endTime={nftDetail.publicEndTime}
             title='Public Sale'
+            contractAddress={nftDetail.nftCollectionAddress}
           />
         </div>
       </div>

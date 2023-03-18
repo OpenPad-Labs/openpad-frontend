@@ -50,10 +50,8 @@ const Home = () => {
   }, [])
 
   const goProductDetail = (id) => {
-    console.log(id)
-    if (null!=id){
-      history(`/product-detail/`+id)
-    }
+    console.log('id',id)
+      history(`/product-detail/${id}`)
   }
 
   const FirstContent = () => {
@@ -139,7 +137,7 @@ const Home = () => {
                     }
                   }
                 }}
-                onClick={goProductDetail(item.nftCollectionAddress)}
+                onClick={()=>{goProductDetail(item.nftCollectionId)}}
               >
                 <div className={styles.item} key={index}>
                   <div className={styles.endTime}>Ends in 01d 08h 08m 23s</div>
@@ -152,7 +150,7 @@ const Home = () => {
                   </div>
                   <div className={styles.createInfo}>
                     <span className={styles.symbol}>SuiApe</span>
-                    <span className={styles.user}>By Puke2Earn Labs</span>
+                    <span className={styles.user}>{item.nftCollectionId}</span>
                   </div>
                   <div className={styles.operateBox}>
                     <div className={styles.priceInfo}>
@@ -161,9 +159,9 @@ const Home = () => {
                     </div>
                     <div className={styles.priceInfo}>
                       <p className={styles.label}>Price</p>
-                      <p className={styles.value}>Free</p>
+                      <p className={styles.value}>{item.nftCollectionId}</p>
                     </div>
-                    <div className={styles.mintBtn} onClick={goProductDetail(item.nftCollectionAddress)}>
+                    <div className={styles.mintBtn} onClick={()=>{goProductDetail(item.nftCollectionId)}}>
                       <span className={styles.text}>detail</span>
                       <img src={chevron_right} alt='' />
                     </div>
@@ -227,7 +225,7 @@ const Home = () => {
                     <p className={styles.label}>Price</p>
                     <p className={styles.value}>Free</p>
                   </div>
-                  <div className={styles.mintBtn} onClick={goProductDetail(item.nftCollectionAddress)}>
+                  <div className={styles.mintBtn} onClick={()=>{goProductDetail(item.nftCollectionId)}}>
                     <span className={styles.text}>detail</span>
                     <img src={chevron_right} alt='' />
                   </div>
@@ -290,7 +288,7 @@ const Home = () => {
                     <p className={styles.label}>Price</p>
                     <p className={styles.value}>Free</p>
                   </div>
-                  <div className={styles.mintBtn} onClick={goProductDetail(item.nftCollectionAddress)}>
+                  <div className={styles.mintBtn} onClick={()=>{goProductDetail(item.nftCollectionId)}}>
                     <span className={styles.text}>detail</span>
                     <img src={chevron_right} alt='' />
                   </div>

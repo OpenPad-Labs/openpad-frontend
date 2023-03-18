@@ -9,13 +9,14 @@ import AIGCModal from 'src/components/AIGC/AIGCModal'
 
 const AccordionCard = ({
   title = "Private Sale",
-  time = 'Active | Ends in 01d 08h 08m 23s',
   price = '0.1',
-  startTime = '1678874400000',
-  endTime = '1679306400000',
+  startTime ,
+  endTime ,
   detail = '',
-  defaultExpanded = false
+  defaultExpanded = false,
+  contractAddress=''
 }) => {
+  // console.log('startTime', startTime)
   const [defaultExpandedFlag, setDefaultExpandedFlag] = useState(defaultExpanded);
   const [open, setOpen] = useState(false);
   const [modalText, setModalText] = useState('');
@@ -28,15 +29,20 @@ const AccordionCard = ({
   const checkWhite = async () => {
     await setModalText(<><div>checking...</div></>);
     setOpen(true)
-    console.log(1112)
+    // console.log('contractAddress',contractAddress)
     //project id 0xbe63d945901e09f070384b77522bdf054f69ce3c
     const provider = new JsonRpcProvider(devnetConnection);
     // get tokens from the DevNet faucet server
     const objects = await provider.getObject(
-      "0x60405284a4ad228225fca66c82d4af620d253789",
+      contractAddress
     );
     console.log(objects)
-    const whiteList=objects?.details?.data?.fields?.listed?.fields?.contents
+    let whiteList;
+    if (title==='Airdrop'){
+      whiteList=objects?.details?.data?.fields?.airdrop_list?.fields?.contents
+    }else {
+      whiteList=objects?.details?.data?.fields?.whitelist?.fields?.contents
+    }
     let inWhite=false
     if (whiteList!==undefined){
       for (let i = 0; i < whiteList.length; i++) {
@@ -190,13 +196,13 @@ const AccordionCard = ({
           </p> */}
           { detail }
         </div>
-        <div className={styles.btnBox} onClick={checkWhite}>
+        {title!=='Public Sale'? <div className={styles.btnBox} onClick={checkWhite}>
           <div className={styles.checkBtn}>Check Eligibility</div>
           {/* <div className={styles.notifyBtn}>
             <img src={notifyBtn} alt='' />
             <span>Notify Me</span>
           </div> */}
-        </div>
+        </div>:<div></div>}
       </AccordionDetails>
       <AIGCModal setOpen={setOpen} text={modalText} open={open} showResults={showResults}/>
     </Accordion >

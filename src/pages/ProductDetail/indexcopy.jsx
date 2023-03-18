@@ -122,7 +122,9 @@ const Home = () => {
         url: nftResult.telegram
       })
     }
-
+    // nftResult.airDropEndTime=1779369532204
+    // nftResult.airDropStartTime=1779369532204
+    console.log('nftResult',nftResult)
     setNftDetail(nftResult)
   }
 
@@ -338,12 +340,13 @@ const Home = () => {
           {/*    })}*/}
           {/*  </div>*/}
           {/*  : }*/}
+
           <div className={styles.questionList}>{activeTab === 0 ? nftDetail.nftCollectionRoadmap : activeTab === 1 ? nftDetail.team : nftDetail.faq}</div>
         </div>
         <div className='accordion-card'>
-          <AccordionCard defaultExpanded={true}/>
-          <AccordionCard title="Airdrop"/>
-          <AccordionCard title='Public Sale'/>
+          <AccordionCard defaultExpanded={true} startTime={nftDetail.privateSaleStartTime} endTime={nftDetail.privateSaleEndTime}/>
+          <AccordionCard title="Airdrop" startTime={nftDetail.airDropStartTime} endTime={nftDetail.airDropEndTime}/>
+          <AccordionCard title='Public Sale' startTime={nftDetail.publicSaleStartTime} endTime={nftDetail.publicEndTime}/>
         </div>
       </div>
     )
