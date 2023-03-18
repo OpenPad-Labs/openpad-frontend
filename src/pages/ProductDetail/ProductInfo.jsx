@@ -50,6 +50,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
   const [modalText, setModalText] = useState('');
   const [showResults, setShowResults] = useState(true);
   const [stepNum, setStepNum] = useState(1)
+  const [preLimit, setPreLimit] = useState(1)
 
   const queryMintCount = async (nftResult) => {
     //project id 0xbe63d945901e09f070384b77522bdf054f69ce3c
@@ -59,10 +60,19 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
     const objects = await provider.getObject(
       nftResult.nftCollectionAddress,
     );
-    console.log(objects)
+    console.log('objects===',objects)
     const tempMintCount = objects?.details?.data?.fields?.art_sequence
     console.log('tempMintCount',tempMintCount)
     setMintCount(tempMintCount)
+    //查看mint上限
+    const preList=objects?.details?.data?.fields?.whitelist?.fields?.contents
+    for (const item of preList) {
+      const listAddress=item?.fields?.key
+      if (listAddress===wallet?.account?.address){
+        setPreLimit(item?.fields?.value?.fields?.num)
+        break
+      }
+    }
   }
 
   const initData = async () => {
@@ -116,7 +126,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
     });
     initData()
     // checkEligibility()
-  }, [])
+  }, [wallet?.account?.address])
 
   // 步进器-减
   const subtractStep = () => {
@@ -144,13 +154,14 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
     if (val <= 0) {
       val = 1
     }
-    if (val >= 100) {
-      val = 100
+    if (val >= preLimit) {
+      val = preLimit
     }
     setStepNum(val)
   }
 
   const mintNFT = async () => {
+    try {
     await setModalText(<>
       <div>Please confirm in your wallet...</div>
     </>);
@@ -175,6 +186,11 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
           </div>
         </>);
         setOpen(true)
+      }else {
+        await setModalText(<>
+          <div>mint error</div>
+        </>)
+        setOpen(true)
       }
 
     } else if (nowTime > nftDetail.publicSaleStartTime * 1 && nowTime < nftDetail.publicEndTime * 1) {
@@ -188,9 +204,14 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
           </div>
         </>);
         setOpen(true)
+      }else {
+        await setModalText(<>
+          <div>mint error</div>
+        </>)
+        setOpen(true)
       }
     }else if (nowTime > nftDetail.airDropStartTime * 1 && nowTime < nftDetail.airDropEndTime * 1){
-      const result= airdropNFT()
+      const result= await airdropNFT()
       if (result==='success') {
         setOpen(false)
         await setModalText(<>
@@ -198,7 +219,19 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
           </div>
         </>);
         setOpen(true)
+      }else {
+        await setModalText(<>
+          <div>mint error</div>
+        </>)
+        setOpen(true)
       }
+    }
+    } catch (error) {
+      console.log(error)
+      await setModalText(<>
+        <div>mint error</div>
+      </>)
+      setOpen(true)
     }
 
   }
@@ -253,7 +286,11 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
           data
         }
       });
-      return 'success'
+      if (resData?.effects?.status?.status==='success'){
+        return 'success'
+      }else {
+        return 'error'
+      }
     } catch (error) {
       console.log(error)
       await setModalText(<>
@@ -287,7 +324,13 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
         data
       }
     });
-    return 'success'
+      console.log('contract resData',resData)
+      console.log('contract resData.effects.status',resData.effects.status.status)
+      if (resData?.effects?.status?.status==='success'){
+        return 'success'
+      }else {
+        return 'error'
+      }
   } catch (error) {
       console.log(error)
     await setModalText(<>
@@ -316,7 +359,12 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
         data
       }
     });
-    return 'success'
+    console.log('resData airdrop', resData)
+      if (resData?.effects?.status?.status==='success'){
+        return 'success'
+      }else {
+        return 'error'
+      }
   } catch (error) {
       console.log(error)
     await setModalText(<>
