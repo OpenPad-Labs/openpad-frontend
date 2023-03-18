@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from 'react'
-import DarkMode from '../DarkMode'
 import styles from './header.module.scss'
 // import './header.module.less'
 import LogoIcon from '../../../assets/img/logo/logo.png'
@@ -167,7 +166,6 @@ const Header = () => {
 
           </ConnectButton>
         </Box>
-        {/* <DarkMode /> */}
       </div>
     </header >
   )
