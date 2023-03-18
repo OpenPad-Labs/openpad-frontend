@@ -35,7 +35,7 @@ const MyCountdown = ({ start, end }) => {
             padding: '7px 10px',
             fontSize: 16,
           }}>
-            End Date: {new Date(end).toString()?.replaceAll('(中国标准时间)')}
+            End Date: {new Date(end).toString()?.replaceAll('(中国标准时间)','').replaceAll('+0800','+8')}
           </Box>
         }
         placement="top-end"
@@ -55,13 +55,13 @@ const MyCountdown = ({ start, end }) => {
             padding: '7px 10px',
             fontSize: 16,
           }}>
-            Start Date: {new Date(start).toString()?.replaceAll('(中国标准时间)')}
+            Start Date: {new Date(start).toString()?.replaceAll('(中国标准时间)','').replaceAll('+0800','+8')}
           </Box>
         }
         placement="top-end"
       >
         <div className={styles.statusBar}>
-          Start In
+         {`Start In ` }
           <Countdown
             date={start}
             renderer={renderer}
@@ -78,7 +78,7 @@ const MyCountdown = ({ start, end }) => {
           padding: '7px 10px',
           fontSize: 16,
         }}>
-          {'End Date: ' + new Date(end).toString()?.replaceAll('(中国标准时间)')}
+          {'End Date: ' + new Date(end).toString()?.replaceAll('(中国标准时间)','').replaceAll('+0800','+8')}
         </Box>
       }
       placement="top-end"
