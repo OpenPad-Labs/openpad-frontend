@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react'
+import React, {memo, useEffect, useState} from 'react'
 import styles from './index.module.scss'
 import userInfoIcon from '../../assets/img/page/home/userInfo.png'
 import rightArrow from '../../assets/img/page/home/rightArrow.png'
@@ -6,12 +6,12 @@ import dogeAvatar from '../../assets/img/page/home/suibear.webp'
 import listItemDemo from '../../assets/img/page/home/list-item-demo.png'
 import chevron_right from '../../assets/img/page/home/chevron_right.png'
 import categoryIcon from '../../assets/img/page/home/category.png'
-import { Pagination } from '@mui/material'
+import {Pagination} from '@mui/material'
 import sortIcon from '../../assets/img/page/home/sort.png'
-import { getBanner, getNftDetail, getNftList } from 'src/service/home'
+import {getBanner, getNftDetail, getNftList} from 'src/service/home'
 import Slider from 'react-slick'
-import { Box, Tooltip, Accordion, AccordionSummary, Typography, AccordionDetails } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
+import {Box, Tooltip, Accordion, AccordionSummary, Typography, AccordionDetails} from '@mui/material'
+import {useNavigate,useParams} from 'react-router-dom'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import netIcon from '../../assets/img/page/product_detail/net.png'
 import discordIcon from '../../assets/img/page/product_detail/discord.png'
@@ -22,16 +22,21 @@ import cartIcon from '../../assets/img/page/product_detail/cartIcon.png'
 import notifyBtn from '../../assets/img/page/product_detail/notifyBtn.svg'
 import classNames from 'classnames'
 import ArrowDownIcon from '../../assets/img/page/product_detail/arrowDown.png'
-import { fontSize } from '@mui/system'
+import {fontSize} from '@mui/system'
 import AccordionCard from './AccordionCard'
-import { checkEligibility } from '../../service/mint'
+import {checkEligibility} from '../../service/mint'
 import {useWallet} from "@suiet/wallet-kit";
 import {devnetConnection, JsonRpcProvider} from "@mysten/sui.js";
+import AIGCModal from 'src/components/AIGC/AIGCModal'
 
 const Home = () => {
   const [nftDetail, setNftDetail] = useState([])
   const [bannerList, setBannerList] = useState([])
   const history = useNavigate()
+  const [mintCount, setMintCount] = useState(0)
+  const [open, setOpen] = useState(false);
+  const [modalText, setModalText] = useState('');
+  const [showResults, setShowResults] = useState(true);
 
   const defaultQuestionList = [
     {
@@ -84,36 +89,39 @@ const Home = () => {
     //   url: ''
     // }
   ]
+  const params = useParams()
 
   const initData = async () => {
-    const bList = await getBanner()
-    setBannerList(bList)
+    console.log(params) // {id: "2",name:"zora"}
+    console.log(params.address) // {id: "2",name:"zora"}
+    // const bList = await getBanner()
+    // setBannerList(bList)
     const nftResult = await getNftDetail({
-      nftCollectionId: '22222'
+      nftCollectionId: '0'
     })
     // console.log(nList)
-    if (nftResult.website!=null){
+    if (nftResult.website != null) {
       platformList.add({
         name: 'Net',
         icon: netIcon,
         url: nftResult.website
       })
     }
-    if (nftResult.discord!=null){
+    if (nftResult.discord != null) {
       platformList.add({
         name: 'Discord',
         icon: discordIcon,
         url: nftResult.discord
       })
     }
-    if (nftResult.twitter!=null){
+    if (nftResult.twitter != null) {
       platformList.add({
         name: 'Twitter',
         icon: twitterIcon,
         url: nftResult.twitter
       })
     }
-   if (nftResult.telegram!=null){
+    if (nftResult.telegram != null) {
       platformList.add({
         name: 'Telegram',
         icon: telegramIcon,
@@ -129,7 +137,8 @@ const Home = () => {
       behavior: "smooth"
     });
     initData()
-    checkEligibility()
+    queryMintCount()
+    // checkEligibility()
   }, [])
 
   const goProductDetail = () => {
@@ -138,31 +147,64 @@ const Home = () => {
 
   const wallet = useWallet();
 
+  const queryMintCount = async () => {
+    //project id 0xbe63d945901e09f070384b77522bdf054f69ce3c
+    const provider = new JsonRpcProvider(devnetConnection);
+    // get tokens from the DevNet faucet server
+    const objects = await provider.getObject(
+      '0xbe63d945901e09f070384b77522bdf054f69ce3c',
+    );
+    console.log(objects)
+    const tempMintCount = objects?.details?.data?.fields?.art_sequence
+    setMintCount(tempMintCount)
+  }
+
   const mintNFT = async () => {
-    console.log(1111)
+
     const balanceObjectId = await getCoin()
-    if (balanceObjectId===''){
-      console.log('钱不够')
+    if (balanceObjectId === '') {
+      await setModalText(<>
+        <div>token don't enough</div>
+      </>);
+      setOpen(true)
       return
     }
-    console.log('balanceObjectId', balanceObjectId)
-    const data = {
-      packageObjectId: '0x9981c8d3cd531ff4fc6be3059f33ca3435349002',
-      module: 'nft',
-      function: 'public_sale',
-      typeArguments: [],
-      arguments: [
-        balanceObjectId,
-        nftDetail.nftCollectionAddress
-      ],
-      gasBudget: 10000,
-    };
-    const resData = await wallet.signAndExecuteTransaction({
-      transaction: {
-        kind: 'moveCall',
-        data
+    const nowTime = Date.parse(new Date())
+    if (nowTime > nftDetail.privateSaleStartTime * 1 && nowTime < nftDetail.privateSaleEndTime * 1) {
+      //private sale time
+      await setModalText(<>
+        <div>Please confirm in your wallet...</div>
+      </>);
+      setOpen(true)
+      const result=await preSaleNFT(balanceObjectId)
+      if (result==='success'){
+        setOpen(false)
+        await setModalText(<>
+          <div>Congrats! You have successfully minted 2 NFTs. <br/><br/>
+            Your NFTs will appear in your Profile page.
+          </div>
+        </>);
+        setOpen(true)
       }
-    });
+
+    } else if (nowTime > nftDetail.publicSaleStartTime * 1 && nowTime < nftDetail.publicEndTime * 1) {
+      //public sale time
+      await setModalText(<>
+        <div>Please confirm in your wallet...</div>
+      </>);
+      setOpen(true)
+      const result= await publicSale(balanceObjectId)
+      if (result==='success') {
+        setOpen(false)
+        await setModalText(<>
+          <div>Congrats! You have successfully minted 2 NFTs. <br/><br/>
+            Your NFTs will appear in your Profile page.
+          </div>
+        </>);
+        setOpen(true)
+      }
+    }
+
   }
 
   const getCoin = async () => {
@@ -192,13 +234,39 @@ const Home = () => {
     }
   }
 
-  const preSaleNFT = async () => {
-    const balanceObjectId = await getCoin()
-    if (balanceObjectId===''){
-      console.log('钱不够')
-      return
+  const publicSale = async (balanceObjectId) => {
+    console.log(111)
+    try {
+      const data = {
+        packageObjectId: '0x9981c8d3cd531ff4fc6be3059f33ca3435349002',
+        module: 'nft',
+        function: 'public_sale',
+        typeArguments: [],
+        arguments: [
+          balanceObjectId,
+          nftDetail.nftCollectionAddress
+        ],
+        gasBudget: 10000,
+      };
+      const resData = await wallet.signAndExecuteTransaction({
+        transaction: {
+          kind: 'moveCall',
+          data
+        }
+      });
+      return 'success'
+    } catch (error) {
+      await setModalText(<>
+        <div>mint error</div>
+      </>)
+      setOpen(true)
+      return 'error'
     }
+  }
 
+  const preSaleNFT = async (balanceObjectId) => {
+    console.log(111)
+    try {
     const data = {
       packageObjectId: '0x9981c8d3cd531ff4fc6be3059f33ca3435349002',
       module: 'nft',
@@ -218,6 +286,14 @@ const Home = () => {
         data
       }
     });
+    return 'success'
+  } catch (error) {
+    await setModalText(<>
+      <div>mint error</div>
+    </>)
+    setOpen(true)
+  }
+    return 'error'
   }
 
   const FirstContent = () => {
@@ -225,9 +301,9 @@ const Home = () => {
     // 步进器-减
     const subtractStep = () => {
       if (stepNum == '') return
-      if (stepNum*1 > 1) {
-        setStepNum(stepNum*1 - 1)
-      }else {
+      if (stepNum * 1 > 1) {
+        setStepNum(stepNum * 1 - 1)
+      } else {
         setStepNum(1)
       }
     }
@@ -236,15 +312,15 @@ const Home = () => {
     const addStep = () => {
       if (stepNum == '') {
         setStepNum(1)
-      }else {
-        setStepNum(stepNum*1 + 1)
+      } else {
+        setStepNum(stepNum * 1 + 1)
       }
     }
 
     // 步进器-输入不可输入非数字
     const stepInput = event => {
       let val = event.nativeEvent.target.value
-      val = val.replace(/[^0-9]/g,'')
+      val = val.replace(/[^0-9]/g, '')
       if (val <= 0) {
         val = 1
       }
@@ -262,7 +338,7 @@ const Home = () => {
             <div className={styles.title}>{nftDetail.nftCollectionName}</div>
             <div className={styles.box1}>
               <div className={styles.userBox}>
-                <img className={styles.userInfoIcon} src={nftDetail.nftCollectionIcon} alt='' />
+                <img className={styles.userInfoIcon} src={nftDetail.nftCollectionIcon} alt=''/>
                 <div className={styles.userInfo}>
                   <span className={styles.userInfoTitle}>By</span>
                   <span className={styles.userInfoTeam}>{nftDetail.nftCollectionTeam}</span>
@@ -274,7 +350,7 @@ const Home = () => {
                     <div className={styles.platformItem} key={index} onClick={() => {
                       window.open(nftDetail.url);
                     }}>
-                      <img className={styles.platformIcon} src={item.icon} alt='' />
+                      <img className={styles.platformIcon} src={item.icon} alt=''/>
                       {/* <span className={styles.platformName}>{item.name}</span> */}
                     </div>
                   )
@@ -285,35 +361,34 @@ const Home = () => {
               {nftDetail.nftCollectionDesc}
             </div>
             <div className={styles.mintProgress}>
-              <div className={styles.b1} style={{width: nftDetail.minted/nftDetail.nftCollectionSupply*100 + "%"}}>
-                <span>{nftDetail.minted/nftDetail.nftCollectionSupply*100}% Total Minted</span>
+              <div className={styles.b1} style={{width: nftDetail.mintCount / nftDetail.nftCollectionSupply * 100 + "%"}}>
+                <span>{nftDetail.mintCount / nftDetail.nftCollectionSupply * 100}% Total Minted</span>
               </div>
-              <div className={styles.b2}>{nftDetail.minted}/{nftDetail.nftCollectionSupply}</div>
+              <div className={styles.b2}>{nftDetail.mintCount}/{nftDetail.nftCollectionSupply}</div>
             </div>
             <div className={styles.privateSale}>
               <div className={styles.b1}>
-                <div className={styles.t1}>Private Sale ({nftDetail.nftCollectionSupply-nftDetail.minted} items remaining)</div>
+                <div className={styles.t1}>Private Sale ({nftDetail.nftCollectionSupply - nftDetail.mintCount} items remaining)</div>
                 <div className={styles.t2}>{nftDetail.price} SUI | Max 2 per wallet</div>
               </div>
               <div className={styles.b2}>
                 <div onClick={subtractStep} className={styles.t1}>-</div>
-                <input value={stepNum} onChange={stepInput} type='text' />
+                <input value={stepNum} onChange={stepInput} type='text'/>
                 <div onClick={addStep} className={styles.t2}>+</div>
               </div>
             </div>
 
             <div className={styles.viewDetailBtn} onClick={mintNFT}>
-              <img className={styles.icon} src={cartIcon} alt='' />
+              <img className={styles.icon} src={cartIcon} alt=''/>
               <span>Mint now</span>
             </div>
           </div>
+          <AIGCModal setOpen={setOpen} text={modalText} open={open} showResults={showResults}/>
+
         </div>
       </>
     )
   }
-
-
-
 
 
   const SencondContent = () => {
@@ -417,8 +492,8 @@ const Home = () => {
       <TodayPicks data={todayPickData} />
       <PopularCollection data={popularCollectionData} />
       <Create /> */}
-        <FirstContent />
-        <SencondContent />
+        <FirstContent/>
+        <SencondContent/>
       </div>
     </div>
   )

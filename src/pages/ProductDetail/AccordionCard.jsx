@@ -5,6 +5,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import notifyBtn from '../../assets/img/page/product_detail/notifyBtn.svg'
 import {devnetConnection, JsonRpcProvider} from "@mysten/sui.js";
 import {useWallet} from "@suiet/wallet-kit";
+import AIGCModal from 'src/components/AIGC/AIGCModal'
 
 const AccordionCard = ({
   title = "Private Sale",
@@ -16,30 +17,44 @@ const AccordionCard = ({
   defaultExpanded = false
 }) => {
   const [defaultExpandedFlag, setDefaultExpandedFlag] = useState(defaultExpanded);
+  const [open, setOpen] = useState(false);
+  const [modalText, setModalText] = useState('');
+  const [showResults, setShowResults] = useState(true);
+
   const wallet = useWallet();
   const handleExpanded = event => {
     setDefaultExpandedFlag(!defaultExpandedFlag)
   }
   const checkWhite = async () => {
+    await setModalText(<><div>checking...</div></>);
+    setOpen(true)
+    console.log(1112)
     //project id 0xbe63d945901e09f070384b77522bdf054f69ce3c
     const provider = new JsonRpcProvider(devnetConnection);
     // get tokens from the DevNet faucet server
     const objects = await provider.getObject(
-      '0x60405284a4ad228225fca66c82d4af620d253789',
+      "0x60405284a4ad228225fca66c82d4af620d253789",
     );
-    console.log()
+    console.log(objects)
     const whiteList=objects?.details?.data?.fields?.listed?.fields?.contents
     let inWhite=false
     if (whiteList!==undefined){
       for (let i = 0; i < whiteList.length; i++) {
-        const address=whiteList[i]
+        const address=whiteList[i].fields?.key
         if (address===wallet?.account?.address){
           inWhite=true
         }
       }
     }
     if (inWhite){
-      console.log('在白单')
+      await setModalText(<><div>Congrats! You are eligible to mint!</div></>);
+      setOpen(true)
+    }else {
+      await setModalText(<><div>Sorry! You are not on the list. <br/>
+        Click here to view the whitelist<br/>
+        If you believe that you should be on the list, please contact @NFTPROJ directly.<br/><br/>
+        Or, join Maxi Membership to enter the whitelist directly.</div></>);
+      setOpen(true)
     }
   }
 
@@ -183,6 +198,7 @@ const AccordionCard = ({
           </div> */}
         </div>
       </AccordionDetails>
+      <AIGCModal setOpen={setOpen} text={modalText} open={open} showResults={showResults}/>
     </Accordion >
   )
 }

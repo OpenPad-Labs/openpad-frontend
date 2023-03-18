@@ -49,8 +49,11 @@ const Home = () => {
     initData()
   }, [])
 
-  const goProductDetail = id => {
-    history(`/product-detail`)
+  const goProductDetail = (id) => {
+    console.log(id)
+    if (null!=id){
+      history(`/product-detail/`+id)
+    }
   }
 
   const FirstContent = () => {
@@ -136,7 +139,7 @@ const Home = () => {
                     }
                   }
                 }}
-                onClick={goProductDetail}
+                onClick={goProductDetail(item.nftCollectionAddress)}
               >
                 <div className={styles.item} key={index}>
                   <div className={styles.endTime}>Ends in 01d 08h 08m 23s</div>
@@ -160,7 +163,7 @@ const Home = () => {
                       <p className={styles.label}>Price</p>
                       <p className={styles.value}>Free</p>
                     </div>
-                    <div className={styles.mintBtn} onClick={goProductDetail}>
+                    <div className={styles.mintBtn} onClick={goProductDetail(item.nftCollectionAddress)}>
                       <span className={styles.text}>detail</span>
                       <img src={chevron_right} alt='' />
                     </div>
@@ -224,7 +227,7 @@ const Home = () => {
                     <p className={styles.label}>Price</p>
                     <p className={styles.value}>Free</p>
                   </div>
-                  <div className={styles.mintBtn} onClick={goProductDetail}>
+                  <div className={styles.mintBtn} onClick={goProductDetail(item.nftCollectionAddress)}>
                     <span className={styles.text}>detail</span>
                     <img src={chevron_right} alt='' />
                   </div>
@@ -287,7 +290,7 @@ const Home = () => {
                     <p className={styles.label}>Price</p>
                     <p className={styles.value}>Free</p>
                   </div>
-                  <div className={styles.mintBtn} onClick={goProductDetail}>
+                  <div className={styles.mintBtn} onClick={goProductDetail(item.nftCollectionAddress)}>
                     <span className={styles.text}>detail</span>
                     <img src={chevron_right} alt='' />
                   </div>
