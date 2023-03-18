@@ -280,6 +280,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
       ],
       gasBudget: 10000,
     };
+      console.log('data', data)
     const resData = await wallet.signAndExecuteTransaction({
       transaction: {
         kind: 'moveCall',
