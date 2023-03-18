@@ -335,7 +335,7 @@
     }
 
     .sencondContent {
-      margin-top: 117px;
+      margin-top: 80px;
       display: flex;
       justify-content: space-between;
 
@@ -461,6 +461,7 @@
       .accordionCard {
         flex: 1;
         margin-left: 60px;
+        margin-bottom: 60px;
         @media (max-width:750px) {
           width: calc(100vw - 40px);
           margin-left: 0;

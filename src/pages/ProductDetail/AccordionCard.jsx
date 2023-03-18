@@ -3,70 +3,120 @@ import styles from './index.module.scss'
 import { Box, Tooltip, Accordion, AccordionSummary, Typography, AccordionDetails } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import notifyBtn from '../../assets/img/page/product_detail/notifyBtn.svg'
+import { devnetConnection, JsonRpcProvider } from "@mysten/sui.js";
+import { useWallet } from "@suiet/wallet-kit";
+import AIGCModal from 'src/components/AIGC/AIGCModal'
+import Countdown from "react-countdown";
+import MyCountdown from './MyCountdown';
 
 const AccordionCard = ({
   title = "Private Sale",
-  time = 'Active | Ends in 01d 08h 08m 23s',
   price = '0.1',
-  startTime = '1678874400000',
-  endTime = '1679306400000',
+  startTime,
+  endTime,
   detail = '',
-  defaultExpanded = false
+  defaultExpanded = false,
+  contractAddress = ''
 }) => {
+  // console.log('startTime', Date.now() - startTime)
+  // console.log('endTime', Date.now() - endTime)
+
   const [defaultExpandedFlag, setDefaultExpandedFlag] = useState(defaultExpanded);
+  const [open, setOpen] = useState(false);
+  const [modalText, setModalText] = useState('');
+  const [showResults, setShowResults] = useState(true);
+
+  const wallet = useWallet();
   const handleExpanded = event => {
     setDefaultExpandedFlag(!defaultExpandedFlag)
   }
-  const [timeStr, setTimeStr] = useState('');
-  const [timeStrTips, setTimeStrTips] = useState('');
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      var dateBegin = new Date();//获取当前时间
-      let now = ''
-      let nowStr = ''
-      // 开始时间大于当前时间时 活动未开始 取开始时间
-      if (startTime*1 > Date.parse(dateBegin)) {
-        now = startTime*1
-        nowStr = 'Start'
-        setTimeStrTips('Start Date: ' + new Date(now).toDateString())
-      }
-      // 当前时间大于开始时间 小于结束时间 活动已开始 未结束 取结束时间
-      if (startTime*1 < Date.parse(dateBegin) && Date.parse(dateBegin) < endTime*1) {
-        now = endTime*1
-        nowStr = 'Ends'
-        setTimeStrTips('End Date: ' + new Date(now).toDateString())
-      }
-      if (Date.parse(dateBegin) > endTime*1) {
-        now = endTime*1
-        setTimeStrTips('End Date: ' + new Date(endTime*1).toDateString())
-        nowStr = 'Closed'
-      }
-      var dateEnd = new Date(now);//将-转化为/，使用new Date
-      var dateDiff = dateEnd.getTime() - dateBegin.getTime();//时间差的毫秒数
-      var dayDiff = Math.floor(dateDiff / (24 * 3600 * 1000));//计算出相差天数
-      var leave1=dateDiff%(24*3600*1000)    //计算天数后剩余的毫秒数
-      var hours=Math.floor(leave1/(3600*1000))//计算出小时数
-      //计算相差分钟数
-      var leave2=leave1%(3600*1000)    //计算小时数后剩余的毫秒数
-      var minutes=Math.floor(leave2/(60*1000))//计算相差分钟数
-      //计算相差秒数
-      var leave3=leave2%(60*1000)      //计算分钟数后剩余的毫秒数
-      var seconds=Math.round(leave3/1000)
-      // console.log(dayDiff+"d", hours+"h",minutes+"m",seconds+"s");
-      if (nowStr == 'Closed') {
-        setTimeStr("Active | "+ nowStr)
-        clearInterval(timer)
-      }else {
-        if (Object.is(dayDiff, NaN)) {
-          setTimeStr("Active | "+ nowStr +" in 0d 0h 0m 0s")
-        }else {
-          setTimeStr("Active | "+ nowStr +" in "+dayDiff+"d "+ hours+"h "+minutes+"m "+seconds+"s")
+  const checkWhite = async () => {
+    await setModalText(<><div>checking...</div></>);
+    setOpen(true)
+    // console.log('contractAddress',contractAddress)
+    //project id 0xbe63d945901e09f070384b77522bdf054f69ce3c
+    const provider = new JsonRpcProvider(devnetConnection);
+    // get tokens from the DevNet faucet server
+    const objects = await provider.getObject(
+      contractAddress
+    );
+    console.log(objects)
+    let whiteList;
+    if (title === 'Airdrop') {
+      whiteList = objects?.details?.data?.fields?.airdrop_list?.fields?.contents
+    } else {
+      whiteList = objects?.details?.data?.fields?.whitelist?.fields?.contents
+    }
+    let inWhite = false
+    if (whiteList !== undefined) {
+      for (let i = 0; i < whiteList.length; i++) {
+        const address = whiteList[i].fields?.key
+        if (address === wallet?.account?.address) {
+          inWhite = true
         }
       }
-    }, 1000);
+    }
+    if (inWhite) {
+      await setModalText(<><div>Congrats! You are eligible to mint!</div></>);
+      setOpen(true)
+    } else {
+      await setModalText(<><div>Sorry! You are not on the list. <br />
+        Click here to view the whitelist<br />
+        If you believe that you should be on the list, please contact @NFTPROJ directly.<br /><br />
+        Or, join Maxi Membership to enter the whitelist directly.</div></>);
+      setOpen(true)
+    }
+  }
 
-  }, []);
+  // const [nowTime, setNowTime] = useState();
+  // const [timeStr, setTimeStr] = useState('');
+  // const [timeStrTips, setTimeStrTips] = useState('');
+
+  // useEffect(() => {
+  //   var dateBegin = new Date();//获取当前时间
+  //   let now = ''
+  //   let nowStr = ''
+  //   // 开始时间大于当前时间时 活动未开始 取开始时间
+  //   if (startTime * 1 > Date.parse(dateBegin)) {
+  //     now = startTime * 1
+  //     nowStr = 'Start'
+  //     setTimeStrTips('Start Date:')
+  //   }
+  //   // 当前时间大于开始时间 小于结束时间 活动已开始 未结束 取结束时间
+  //   if (startTime * 1 < Date.parse(dateBegin) && Date.parse(dateBegin) < endTime * 1) {
+  //     now = endTime * 1
+  //     nowStr = 'Ends'
+  //     setTimeStrTips('End Date:')
+  //   }
+  //   if (Date.parse(dateBegin) > endTime * 1) {
+  //     now = endTime * 1
+  //     setTimeStrTips('End Date: ')
+  //     nowStr = 'Closed'
+  //   }
+  //   setNowTime(now)
+  //   var dateEnd = new Date(now);//将-转化为/，使用new Date
+  //   var dateDiff = dateEnd.getTime() - dateBegin.getTime();//时间差的毫秒数
+  //   var dayDiff = Math.floor(dateDiff / (24 * 3600 * 1000));//计算出相差天数
+  //   var leave1 = dateDiff % (24 * 3600 * 1000)    //计算天数后剩余的毫秒数
+  //   var hours = Math.floor(leave1 / (3600 * 1000))//计算出小时数
+  //   //计算相差分钟数
+  //   var leave2 = leave1 % (3600 * 1000)    //计算小时数后剩余的毫秒数
+  //   var minutes = Math.floor(leave2 / (60 * 1000))//计算相差分钟数
+  //   //计算相差秒数
+  //   var leave3 = leave2 % (60 * 1000)      //计算分钟数后剩余的毫秒数
+  //   var seconds = Math.round(leave3 / 1000)
+  //   // console.log(dayDiff+"d", hours+"h",minutes+"m",seconds+"s");
+  //   if (nowStr === 'Closed') {
+  //     setTimeStr("Active | ")
+  //   } else {
+  //     if (Object.is(dayDiff, NaN)) {
+  //       setTimeStr("Active | ")
+  //     } else {
+  //       setTimeStr("Active | ")
+  //     }
+  //   }
+
+  // }, []);
   return (
     <Accordion
       className='Accordion'
@@ -109,20 +159,10 @@ const AccordionCard = ({
               </div>
             </Box>
             <div className={`${styles.statusBarFalse} ${defaultExpandedFlag ? '' : styles.statusBarTrue}`}>
-              <Tooltip
-                title={
-                  <Box sx={{
-                    background: '#fff',
-                    padding: '7px 10px',
-                    fontSize: 16,
-                  }}>
-                    {timeStrTips}
-                  </Box>
-                }
-                placement="top-end"
-              >
-                <div className={styles.statusBar}>{timeStr}</div>
-              </Tooltip>
+              <MyCountdown
+                start={Number(startTime)}
+                end={Number(endTime)}
+              />
             </div>
           </div>
         </AccordionSummary>
@@ -135,7 +175,7 @@ const AccordionCard = ({
             fontWeight: 400,
             fontSize: '16px',
             mb: 2
-          }}>{ price } SUI | Max 2 per wallet</Typography>
+          }}>{price} SUI | Max 2 per wallet</Typography>
         <div className={styles.paragraph}>
           <p>Whitelist requirement:</p>
           {/* <p>1.You need to follow @NFTPROJ on Twitter</p>
@@ -147,16 +187,17 @@ const AccordionCard = ({
             PS: Members of Maxi Pad will be automatically added to the whitelist. View our
             membership policy here.
           </p> */}
-          { detail }
+          {detail}
         </div>
-        <div className={styles.btnBox}>
+        {title !== 'Public Sale' ? <div className={styles.btnBox} onClick={checkWhite}>
           <div className={styles.checkBtn}>Check Eligibility</div>
           {/* <div className={styles.notifyBtn}>
             <img src={notifyBtn} alt='' />
             <span>Notify Me</span>
           </div> */}
-        </div>
+        </div> : <div></div>}
       </AccordionDetails>
+      <AIGCModal setOpen={setOpen} text={modalText} open={open} showResults={showResults} />
     </Accordion >
   )
 }

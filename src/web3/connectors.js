@@ -91,4 +91,3 @@ export const injected = new InjectedConnector({
     chainIds.BSC_GOV_TESTNET,
   ],
 })
-

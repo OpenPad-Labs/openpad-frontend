@@ -14,7 +14,7 @@ import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import UploadImageComp from 'src/components/AIGC/UploadImageComp'
 import vector from '../../assets/img/page/aigc/Vector.svg'
 import {consumePoint, genaigc, genaigcByPic, getPoint} from "../../service/aigcMint";
-import {ConnectWallet} from "../../web3/useMetaConnect";
+// import {ConnectWallet} from "../../web3/useMetaConnect";
 import {SuietWallet, useWallet,useAccountBalance} from '@suiet/wallet-kit';
 import {upload, DataURIToBlob, uploadToNFTStorage} from "../../web3/ipfs";
 import CircularProgress from '@mui/material/CircularProgress';
@@ -249,7 +249,7 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
       return
     }
     if (userPoint <= 0) {
-      await setModalText(<><span>Oops, it appears that you run out of points. <br/><br/>Simply comment “I need more points! My SUI wallet address” under this <a href={'https://twitter.com/intent/tweet?text=I%20need%20more%20points!%20My Sui wallet address is:'+wallet?.account?.address+'&in_reply_to=1632245849362415617'} target='_blank' style={{color:'#5142FC'}}>tweet</a>. And our moderators will send more to you soon :-)</span></>);
+      await setModalText(<><span>Oops, it appears that you run out of points. <br/><br/>Simply comment “I need more points! My SUI wallet address” under this <a href={'https://twitter.com/intent/tweet?text=I%20need%20more%20points!%20My Sui wallet address is:'+wallet?.account?.address+'&in_reply_to=1632245849362415617'} target='_blank' style={{color:'#5142FC'}} rel="noreferrer">tweet</a>. And our moderators will send more to you soon :-)</span></>);
       setShowResults(true)
       setOpen(true)
       return
@@ -270,7 +270,7 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
     );
     console.log(objects?.details)
     if (objects?.details?.data?.fields === undefined || objects?.details?.data?.fields?.whitelist?.fields?.contents.indexOf(wallet?.account?.address) <= -1) {
-      await setModalText(<><span>It appears you are not on the whitelist. <br/><br/>Please follow the </span> <a href='https://twitter.com/Maxi_sui/status/1632259059788419072' target='_blank' style={{color:'#5142FC'}}>instructions</a><span> to get on the whitelist. If you have any doubt, please contact <a href='https://twitter.com/Maxi_sui' target='_blank' style={{color:'#5142FC'}} >@Maxi_sui</a> via twitter.</span></>)
+      await setModalText(<><span>It appears you are not on the whitelist. <br/><br/>Please follow the </span> <a href='https://twitter.com/Maxi_sui/status/1632259059788419072' target='_blank' style={{color:'#5142FC'}} rel="noreferrer">instructions</a><span> to get on the whitelist. If you have any doubt, please contact <a href='https://twitter.com/Maxi_sui' target='_blank' style={{color:'#5142FC'}} rel="noreferrer" >@Maxi_sui</a> via twitter.</span></>)
       setShowResults(true)
       setOpen(true)
       return
@@ -338,7 +338,7 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
     }
     if (balance===0n){
       await setModalText(<><span>our wallet balance is 0 SUI. <br/>
-      Please request dev-net SUI tokens in your wallet or follow these <a href="https://docs.sui.io/explore/wallet-browser#add-sui-tokens-to-your-sui-wallet" target='_blank' style={{color:'#5142FC'}}> instructions.</a></span></>);
+      Please request dev-net SUI tokens in your wallet or follow these <a href="https://docs.sui.io/explore/wallet-browser#add-sui-tokens-to-your-sui-wallet" target='_blank' style={{color:'#5142FC'}} rel="noreferrer"> instructions.</a></span></>);
       setShowResults(true)
       setOpen(true)
       return
