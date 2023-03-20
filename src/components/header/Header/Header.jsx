@@ -109,6 +109,9 @@ const Header = () => {
               color: '#fff',
               // height: 40,
               '.wkit-connected-button': {
+                '@media (max-width:750px)': {
+                  padding: '10px 14px'
+                },
                 '.wkit-connected-button__balance': {
                   fontFamily: 'Montserrat',
                   fontSize: '12px',
