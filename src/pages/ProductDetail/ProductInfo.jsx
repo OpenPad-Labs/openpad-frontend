@@ -63,25 +63,25 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
     console.log('objects===',objects)
     const tempMintCount = objects?.details?.data?.fields?.art_sequence
     console.log('tempMintCount',tempMintCount)
-    setMintCount(tempMintCount)
+    setMintCount(24)
     //查看mint上限
-    const preList=objects?.details?.data?.fields?.whitelist?.fields?.contents
-    for (const item of preList) {
-      const listAddress=item?.fields?.key
-      if (listAddress===wallet?.account?.address){
-        setPreLimit(item?.fields?.value?.fields?.num)
-        break
-      }
-    }
+    // const preList=objects?.details?.data?.fields?.whitelist?.fields?.contents
+    // for (const item of preList) {
+    //   const listAddress=item?.fields?.key
+    //   if (listAddress===wallet?.account?.address){
+    //     setPreLimit(item?.fields?.value?.fields?.num)
+    //     break
+    //   }
+    // }
   }
 
   const initData = async () => {
-    // console.log(params) // {id: "2",name:"zora"}
+    // console.log(params.address) // {id: "2",name:"zora"}
     // console.log(params.address) // {id: "2",name:"zora"}
     // const bList = await getBanner()
     // setBannerList(bList)
     const nftResult = await getNftDetail({
-      nftCollectionId: '0'
+      nftCollectionId: params.address
     })
     // console.log(nList)
     if (nftResult.website != null) {
@@ -112,6 +112,11 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
         url: nftResult.telegram
       })
     }
+
+    Date.parse(new Date())>nftResult.publicSaleStartTime? setPreLimit(nftResult.publicSaleUserMaxMintNum):
+      Date.parse(new Date())>nftResult.privateSaleStartTime?setPreLimit(nftResult.privateSaleUserMaxMintNum):
+        setPreLimit(nftResult.airDropUserMaxMintNum)
+
     // nftResult.airDropStartTime=1779024123855
     // nftResult.airDropStartTime=1779024123855
     setNftDetail(nftResult)
@@ -152,15 +157,21 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
     let val = event.nativeEvent.target.value
     val = val.replace(/[^0-9]/g, '')
     if (val <= 0) {
-      val = 1
+      // val = 1
     }
-    if (val >= preLimit) {
+    if (Number(val) >= Number(preLimit)) {
       val = preLimit
     }
     setStepNum(val)
   }
 
   const mintNFT = async () => {
+    if (!wallet.connected) {
+      await setModalText('Please connect wallet');
+      setShowResults(true)
+      setOpen(true)
+      return
+    }
     try {
     await setModalText(<>
       <div>Please confirm in your wallet...</div>
@@ -266,10 +277,9 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
   }
 
   const publicSale = async (balanceObjectId) => {
-    console.log(111)
     try {
       const data = {
-        packageObjectId: '0xb3d40059ce34de8e077251b6bb98076dab663f79',
+        packageObjectId: '0x53c25b893a8c722194a376b433c68758f787022d',
         module: 'nft',
         function: 'public_sale',
         typeArguments: [],
@@ -304,7 +314,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
   const preSaleNFT = async (balanceObjectId) => {
     try {
     const data = {
-      packageObjectId: '0xb3d40059ce34de8e077251b6bb98076dab663f79',
+      packageObjectId: '0x53c25b893a8c722194a376b433c68758f787022d',
       module: 'nft',
       function: 'presale',
       typeArguments: [],
@@ -344,7 +354,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
   const airdropNFT = async () => {
     try {
     const data = {
-      packageObjectId: '0xb3d40059ce34de8e077251b6bb98076dab663f79',
+      packageObjectId: '0x53c25b893a8c722194a376b433c68758f787022d',
       module: 'nft',
       function: 'airdrop',
       typeArguments: [],
@@ -409,15 +419,33 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
             {nftDetail.nftCollectionDesc}
           </div>
           <div className={styles.mintProgress}>
-            <div className={styles.b1} style={{width: mintCount / nftDetail.nftCollectionSupply * 100 + "%"}}>
-              <span>{mintCount / nftDetail.nftCollectionSupply * 100}% Total Minted</span>
+
+            <div className={styles.b1} style={{width:(mintCount / nftDetail.totalSupply * 100)+'%'}}>
+              <span>
+                {(mintCount / nftDetail.totalSupply * 100) +'% Total Minted'}
+              </span>
             </div>
-            <div className={styles.b2}>{mintCount}/{nftDetail.nftCollectionSupply}</div>
+            <div className={styles.b2}>
+              {
+                mintCount+'/'+nftDetail.totalSupply
+              }
+            </div>
           </div>
+
           <div className={styles.privateSale}>
             <div className={styles.b1}>
-              <div className={styles.t1}>Private Sale ({nftDetail.nftCollectionSupply - mintCount} items remaining)</div>
-              <div className={styles.t2}>{nftDetail.price} SUI | Max 2 per wallet</div>
+              <div className={styles.t1}>
+                {
+                  Date.parse(new Date())>nftDetail.publicSaleStartTime? 'Public Sale (' +(nftDetail.publicSaleTotalSupply - mintCount)+' items remaining)':
+                    Date.parse(new Date())>nftDetail.privateSaleStartTime?'Private Sale (' +(nftDetail.privateSaleTotalSupply - mintCount)+' items remaining)':
+                      'Airdrop (' +(nftDetail.airDropTotalSupply - mintCount)+' items remaining)'
+                }
+                </div>
+              <div className={styles.t2}>{
+                Date.parse(new Date())>nftDetail.publicSaleStartTime? nftDetail.publicSalePrice +' SUI | Max '+nftDetail.publicSaleUserMaxMintNum+' per wallet':
+                Date.parse(new Date())>nftDetail.privateSaleStartTime? nftDetail.privateSalePrice +' SUI | Max '+nftDetail.privateSaleUserMaxMintNum+' per wallet':
+                'Free | Max '+nftDetail.airDropUserMaxMintNum+' per wallet'
+              }</div>
             </div>
             <div className={styles.b2}>
               <div onClick={subtractStep} className={styles.t1}>-</div>
@@ -425,6 +453,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
               <div onClick={addStep} className={styles.t2}>+</div>
             </div>
           </div>
+
 
           <div className={styles.viewDetailBtn} onClick={mintNFT}>
             <img className={styles.icon} src={cartIcon} alt=''/>

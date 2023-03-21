@@ -20,7 +20,7 @@
     .firstContent {
       margin-top: 100px;
       display: flex;
-      align-items: center;
+      //align-items: center;
       justify-content: space-between;
 
       @media (max-width:750px) {
@@ -29,6 +29,51 @@
       }
 
       .left {
+        display: flex;
+        flex-direction:column;
+        justify-content:space-between;
+        .userBox {
+          width: 295px;
+          height: 68px;
+          background: #343444;
+          border-radius: 16px;
+          margin-top: 15px;
+          display: flex;
+          align-items: center;
+          //flex-direction:column;
+          //justify-content:space-between;
+        }
+
+        .userInfoIcon {
+          width: 48.95px;
+          height: 48.95px;
+          border-radius: 16px;
+          margin-left: 9px;
+        }
+
+        .userInfo {
+          margin-left: 10px;
+          display: flex;
+          flex-direction: column;
+          .userInfoTitle {
+            font-family: 'Montserrat';
+            font-style: normal;
+            font-weight: 400;
+            font-size: 13px;
+            line-height: 20px;
+            color: #8A8AA0;
+          }
+
+          .userInfoTeam {
+            font-family: 'Montserrat';
+            font-style: normal;
+            font-weight: 700;
+            font-size: 15px;
+            line-height: 22px;
+            color: #EBEBEB;
+            margin-top: 2px;
+          }
+        }
         .title {
           font-family: 'Montserrat';
           font-style: normal;
@@ -41,13 +86,13 @@
           color: #ffffff;
         }
 
-        .userInfoIcon {
-          width: 295px;
-          height: 68px;
-          background: #343444;
-          border-radius: 16px;
-          margin-top: 15px;
-        }
+        //.userInfoIcon {
+        //  width: 295px;
+        //  height: 68px;
+        //  background: #343444;
+        //  border-radius: 16px;
+        //  margin-top: 15px;
+        //}
 
         .hotInfo {
           font-family: 'Montserrat';
@@ -92,6 +137,7 @@
           color: #ffffff;
           margin-top: 19px;
           cursor: pointer;
+          margin-bottom: 70px;
 
           .rightArrow {
             width: 20px;
@@ -122,6 +168,9 @@
     }
 
     .mintNowList {
+      @media (min-width:750px) {
+        margin-top: 100px;
+      }
       .title {
         font-family: 'Montserrat';
         font-style: normal;

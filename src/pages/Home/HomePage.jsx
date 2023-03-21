@@ -15,6 +15,8 @@ import Slider from 'react-slick';
 import { Box } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import InfoDisplay from './InfoDisplay'
+import MyCountdown from "../ProductDetail/MyCountdown";
+
 const Home = () => {
   const [mintingNftList, setMintingNftList] = useState([])
   const [upcomingNftList, setUpcomingNftList] = useState([])
@@ -50,7 +52,11 @@ const Home = () => {
   }, [])
 
   const goProductDetail = (id) => {
+    if (id==="0"){
+      history('/suicasso')
+    }else {
       history(`/product-detail/${id}`)
+    }
   }
 
 
@@ -66,7 +72,7 @@ const Home = () => {
               <Box
                 sx={{
                   cursor: 'pointer',
-                  marginRight: '80px',
+                  // marginRight: '80px',
                   '&:nth-child(4n)': {
                     marginRight: '0 ',
                   },
@@ -83,30 +89,37 @@ const Home = () => {
                 onClick={()=>{goProductDetail(item.nftCollectionId)}}
               >
                 <div className={styles.item} key={index}>
-                  <div className={styles.endTime}>Ends in 01d 08h 08m 23s</div>
+                  <div className={styles.endTime}>
+                    <MyCountdown
+                    start={Number(item.publicSaleStartTime)}
+                    end={Number(item.publicEndTime)}
+                  /></div>
                   <div className={styles.descImg}>
-                    <img className={styles.img} src={item.imageUrl} alt='' />
+                    <img className={styles.img} src={item.nftCollectionCover} alt='' />
                     <div className={styles.tagList}>
-                      <div className={styles.tag}>Game Pass</div>
-                      <div className={styles.tag}>PFP</div>
+                      {
+                        item.tag.split(",").map((item , index) => (
+                          <div className={styles.tag}>{item}</div>
+                        ))
+                      }
                     </div>
                   </div>
                   <div className={styles.createInfo}>
-                    <span className={styles.symbol}>SuiApe</span>
-                    <span className={styles.user}>{item.nftCollectionId}</span>
+                    <span className={styles.symbol}>{item.nftCollectionName}</span>
+                    <span className={styles.user}>by {item.nftCollectionTeam}</span>
                   </div>
                   <div className={styles.operateBox}>
                     <div className={styles.priceInfo}>
                       <p className={styles.label}>Item</p>
-                      <p className={styles.value}>{item.nftCollectionId}</p>
+                      <p className={styles.value}>{item.totalSupply}</p>
                     </div>
                     <div className={styles.priceInfo}>
                       <p className={styles.label}>Price</p>
-                      <p className={styles.value}>{item.nftCollectionId}</p>
+                      <p className={styles.value}>{item.publicSalePrice}</p>
                     </div>
                     <div className={styles.mintBtn} onClick={()=>{goProductDetail(item.nftCollectionId)}}>
-                      <span className={styles.text}>detail</span>
-                      <img src={chevron_right} alt='' />
+                      <span className={styles.text}>Mint</span>
+                      <img style={{"marginLeft": '0px'}} src={chevron_right} alt='' />
                     </div>
                   </div>
                 </div>
@@ -146,34 +159,57 @@ const Home = () => {
         <div className={styles.list}>
           {upcomingNftList.map((item, index) => {
             return (
+              <Box
+                sx={{
+                  cursor: 'pointer',
+                  // marginRight: '80px',
+                  '&:nth-child(4n)': {
+                    marginRight: '0 ',
+                  },
+                  "&:hover": {
+                    transform: 'scale(1.04)'
+                  },
+                  '@media (max-width:750px)': {
+                    marginRight: '0',
+                    '&:nth-child(4n)': {
+                      marginRight: '0',
+                    }
+                  }
+                }}
+                onClick={()=>{goProductDetail(item.nftCollectionId)}}
+              >
               <div className={styles.item} key={index}>
-                <div className={styles.endTime}>18 Aug 2023</div>
+                <div className={styles.endTime}>{item.nftCollectionSaveLine}</div>
                 <div className={styles.descImg}>
-                  <img className={styles.img} src={listItemDemo} alt='' />
+                  <img className={styles.img} src={item.nftCollectionCover} alt='' />
                   <div className={styles.tagList}>
-                    <div className={styles.tag}>Game Pass</div>
-                    <div className={styles.tag}>PFP</div>
+                    {
+                      item.tag.split(",").map((item , index) => (
+                        <div className={styles.tag}>{item}</div>
+                      ))
+                    }
                   </div>
                 </div>
                 <div className={styles.createInfo}>
-                  <span className={styles.symbol}>SuiApe</span>
-                  <span className={styles.user}>By Puke2Earn Labs</span>
+                  <span className={styles.symbol}>{item.nftCollectionName}</span>
+                  <span className={styles.user}>by {item.nftCollectionTeam}</span>
                 </div>
                 <div className={styles.operateBox}>
                   <div className={styles.priceInfo}>
                     <p className={styles.label}>Item</p>
-                    <p className={styles.value}>1000</p>
+                    <p className={styles.value}>{item.totalSupply}</p>
                   </div>
                   <div className={styles.priceInfo}>
                     <p className={styles.label}>Price</p>
-                    <p className={styles.value}>Free</p>
+                    <p className={styles.value}>{item.publicSalePrice}</p>
                   </div>
                   <div className={styles.mintBtn} onClick={()=>{goProductDetail(item.nftCollectionId)}}>
-                    <span className={styles.text}>detail</span>
-                    <img src={chevron_right} alt='' />
+                    <span className={styles.text}>More</span>
+                    <img style={{"marginLeft": '0px'}} src={chevron_right} alt='' />
                   </div>
                 </div>
               </div>
+                </Box>
             )
           })}
         </div>
@@ -209,34 +245,57 @@ const Home = () => {
         <div className={styles.list}>
           {endNftList.map((item, index) => {
             return (
+              <Box
+                sx={{
+                  cursor: 'pointer',
+                  // marginRight: '80px',
+                  '&:nth-child(4n)': {
+                    marginRight: '0 ',
+                  },
+                  "&:hover": {
+                    transform: 'scale(1.04)'
+                  },
+                  '@media (max-width:750px)': {
+                    marginRight: '0',
+                    '&:nth-child(4n)': {
+                      marginRight: '0',
+                    }
+                  }
+                }}
+                onClick={()=>{goProductDetail(item.nftCollectionId)}}
+              >
               <div className={styles.item} key={index}>
-                <div className={styles.endTime}>18 Aug 2023</div>
+                <div className={styles.endTime}>{item.nftCollectionSaveLine}</div>
                 <div className={styles.descImg}>
-                  <img className={styles.img} src={listItemDemo} alt='' />
+                  <img className={styles.img} src={item.nftCollectionCover} alt='' />
                   <div className={styles.tagList}>
-                    <div className={styles.tag}>Game Pass</div>
-                    <div className={styles.tag}>PFP</div>
+                    {
+                      item.tag.split(",").map((item , index) => (
+                        <div className={styles.tag}>{item}</div>
+                      ))
+                    }
                   </div>
                 </div>
                 <div className={styles.createInfo}>
-                  <span className={styles.symbol}>SuiApe</span>
-                  <span className={styles.user}>By Puke2Earn Labs</span>
+                  <span className={styles.symbol}>{item.nftCollectionName}</span>
+                  <span className={styles.user}>by {item.nftCollectionTeam}</span>
                 </div>
                 <div className={styles.operateBox}>
                   <div className={styles.priceInfo}>
                     <p className={styles.label}>Item</p>
-                    <p className={styles.value}>1000</p>
+                    <p className={styles.value}>{item.totalSupply}</p>
                   </div>
                   <div className={styles.priceInfo}>
                     <p className={styles.label}>Price</p>
-                    <p className={styles.value}>Free</p>
+                    <p className={styles.value}>{item.publicSalePrice}</p>
                   </div>
                   <div className={styles.mintBtn} onClick={()=>{goProductDetail(item.nftCollectionId)}}>
-                    <span className={styles.text}>detail</span>
-                    <img src={chevron_right} alt='' />
+                    <span className={styles.text}>More</span>
+                    <img style={{"marginLeft": '0px'}} src={chevron_right} alt='' />
                   </div>
                 </div>
               </div>
+              </Box>
             )
           })}
         </div>

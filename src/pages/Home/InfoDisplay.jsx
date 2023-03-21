@@ -4,28 +4,39 @@ import userInfoIcon from '../../assets/img/page/home/userInfo.png'
 import rightArrow from '../../assets/img/page/home/rightArrow.png'
 import dogeAvatar from '../../assets/img/page/home/suibear.webp'
 import { useNavigate } from 'react-router-dom'
+import MaskGroup from '../../assets/img/page/aigc/MaskGroup.svg'
+import zijiLogo from '../../assets/img/logo/Big.svg'
 const InfoDisplay = () => {
   const history = useNavigate()
   const goProductDetail = (id) => {
     history(`/product-detail/${id}`)
+  }
+  const goSuicasso = () => {
+    history('/suicasso')
+    // setActiveIndex(index)
   }
 
   return (
     <>
       <div className={styles.firstContent}>
         <div className={styles.left}>
-          <div className={styles.title}>Sui Bears</div>
-          <img className={styles.userInfoIcon} src={userInfoIcon} alt='' />
-          <div className={styles.hotInfo}>1000 items | 1 SUI | Date: TBA</div>
-          <div className={styles.desc}>
-            A limited NFT collection featuring a richly diverse and unique pool of re-drawn traits
-            from the original Okay Bears collection. What's more, each Sui Bear grants you access
-            to our metaverse - an open-world environment full of economic opportunity and fun
-            group endeavours. Get your entry onto our Bear World by securing a Sui Bear.
+          <div>
+            <div className={styles.title}>Suicasso</div>
+
+            <div className={styles.userBox}>
+              <img className={styles.userInfoIcon} src={zijiLogo} alt=''/>
+              <div className={styles.userInfo}>
+                <span className={styles.userInfoTitle}>By</span>
+                <span className={styles.userInfoTeam}>Maxi Labs</span>
+              </div>
+            </div>
+            <div className={styles.hotInfo}>Unlimited | Free Mint | Ends on 5th Apr 2023</div>
+            <div className={styles.desc}>
+              Suicasso is the first AIGC NFT on SUI. With a text prompt and a picture (optional), you can generate a unique artwork and mint it
+            </div>
           </div>
-          <div className={styles.viewDetailBtn} onClick={()=>{
-            goProductDetail(0)
-          }}>
+
+          <div className={styles.viewDetailBtn} onClick={()=>{goSuicasso(0)}}>
             <span>View Details</span>
             <img className={styles.rightArrow} src={rightArrow} alt='' />
           </div>
@@ -33,7 +44,7 @@ const InfoDisplay = () => {
 
         <div className={styles.right}>
           <div className={styles.swiper}>
-            <img src={dogeAvatar} alt='' />
+            <img src={MaskGroup} alt='' />
           </div>
         </div>
         {/* <Slider

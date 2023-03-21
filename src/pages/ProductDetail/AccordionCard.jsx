@@ -16,7 +16,8 @@ const AccordionCard = ({
   endTime,
   detail = '',
   defaultExpanded = false,
-  contractAddress = ''
+  contractAddress = '',
+  maxMintNum=1
 }) => {
   // console.log('startTime', Date.now() - startTime)
   // console.log('endTime', Date.now() - endTime)
@@ -175,7 +176,7 @@ const AccordionCard = ({
             fontWeight: 400,
             fontSize: '16px',
             mb: 2
-          }}>{price} SUI | Max 2 per wallet</Typography>
+          }}>{price} SUI | Max {maxMintNum} per wallet</Typography>
         <div className={styles.paragraph}>
           <p>Whitelist requirement:</p>
           {/* <p>1.You need to follow @NFTPROJ on Twitter</p>
