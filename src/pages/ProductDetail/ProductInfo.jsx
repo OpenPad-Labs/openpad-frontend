@@ -28,16 +28,18 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
 
   const queryMintCount = async (nftResult) => {
     //project id 0xbe63d945901e09f070384b77522bdf054f69ce3c
+    // devnetConnection.fullnode='https://wallet-rpc.devnet.sui.io:443'
     const provider = new JsonRpcProvider(devnetConnection);
     // get tokens from the DevNet faucet server
     // console.log(nftDetail)
     const objects = await provider.getObject(
       nftResult.nftCollectionAddress,
     );
-    console.log('objects===',objects)
+    // console.log('objects===',objects)
     const tempMintCount = objects?.details?.data?.fields?.art_sequence
-    console.log('tempMintCount',tempMintCount)
+    // console.log('tempMintCount',tempMintCount)
     setMintCount(tempMintCount)
+    // setMintCount(140)
     //查看mint上限
     // const preList=objects?.details?.data?.fields?.whitelist?.fields?.contents
     // for (const item of preList) {
@@ -406,8 +408,8 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
           <div className={styles.mintProgress}>
 
             <div className={styles.b1} style={{width:(mintCount / nftDetail.totalSupply * 100)+'%'}}>
-              <span>
-                {((mintCount / nftDetail.totalSupply).toFixed(4) * 100) +'% Total Minted'}
+              <span style={{'whiteSpace':"nowrap"}}>
+                {Math.round(mintCount / nftDetail.totalSupply*10000)/100 +'% Total Minted'}
               </span>
             </div>
             <div className={styles.b2}>
