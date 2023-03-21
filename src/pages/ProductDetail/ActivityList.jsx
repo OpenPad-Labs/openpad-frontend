@@ -104,6 +104,7 @@ const ActivityList = ({nftDetail}) => {
           defaultExpanded={true}
           contractAddress={nftDetail.nftCollectionAddress}
           maxMintNum={nftDetail.privateSaleUserMaxMintNum}
+          nftStatus={nftDetail.status}
         />
         <AccordionCard
           price={nftDetail.airDropPrice}
@@ -113,6 +114,7 @@ const ActivityList = ({nftDetail}) => {
           title="Airdrop"
           contractAddress={nftDetail.nftCollectionAddress}
           maxMintNum={nftDetail.airDropUserMaxMintNum}
+          nftStatus={nftDetail.status}
         />
         <AccordionCard
           price={nftDetail.publicSalePrice}
@@ -122,6 +124,7 @@ const ActivityList = ({nftDetail}) => {
           title='Public Sale'
           contractAddress={nftDetail.nftCollectionAddress}
           maxMintNum={nftDetail.publicSaleUserMaxMintNum}
+          nftStatus={nftDetail.status}
         />
       </div>
     </div>

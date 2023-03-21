@@ -41,6 +41,7 @@
         .box1 {
           display: flex;
           align-items: center;
+          justify-content: space-between;
 
           @media (max-width:750px) {
             flex-direction: column;
@@ -286,6 +287,40 @@
           align-items: center;
           gap: 10px;
           background: linear-gradient(90deg, #1785FF 0%, #9414FF 100%);
+          border-radius: 30px;
+          cursor: pointer;
+          margin-top: 39px;
+          height: 48px;
+          width: 615px;
+          font-family: 'Montserrat';
+          font-style: normal;
+          font-weight: 700;
+          font-size: 15px;
+          color: #FFFFFF;
+
+          @media (max-width:750px) {
+            // width: calc(100vw - 50px);
+            width: 100%;
+            margin-top: 20px;
+            margin-right: 0;
+          }
+
+          .icon {
+            width: 18px;
+            margin-right: 10px;
+          }
+
+          .rightArrow {
+            width: 20px;
+          }
+        }
+        .viewDetailBtn2 {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          align-items: center;
+          gap: 10px;
+          background: #8A8AA0;
           border-radius: 30px;
           cursor: pointer;
           margin-top: 39px;

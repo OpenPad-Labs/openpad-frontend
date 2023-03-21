@@ -11,33 +11,7 @@ import cartIcon from '../../assets/img/page/product_detail/cartIcon.png'
 import {devnetConnection, JsonRpcProvider} from "@mysten/sui.js";
 import AIGCModal from 'src/components/AIGC/AIGCModal'
 
-const platformList = [
-  // {
-  //   name: 'Net',
-  //   icon: netIcon,
-  //   url: ''
-  // },
-  // {
-  //   name: 'Discord',
-  //   icon: discordIcon,
-  //   url: ''
-  // },
-  // {
-  //   name: 'Twitter',
-  //   icon: twitterIcon,
-  //   url: ''
-  // },
-  // {
-  //   name: 'Telegram',
-  //   icon: telegramIcon,
-  //   url: ''
-  // },
-  // {
-  //   name: 'Note',
-  //   icon: noteIcon,
-  //   url: ''
-  // }
-]
+let platformList = []
 
 
 const ProductInfo = ({setNftDetail,nftDetail}) => {
@@ -63,7 +37,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
     console.log('objects===',objects)
     const tempMintCount = objects?.details?.data?.fields?.art_sequence
     console.log('tempMintCount',tempMintCount)
-    setMintCount(24)
+    setMintCount(tempMintCount)
     //查看mint上限
     // const preList=objects?.details?.data?.fields?.whitelist?.fields?.contents
     // for (const item of preList) {
@@ -84,29 +58,30 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
       nftCollectionId: params.address
     })
     // console.log(nList)
+    platformList=[]
     if (nftResult.website != null) {
-      platformList.add({
+      platformList.push({
         name: 'Net',
         icon: netIcon,
         url: nftResult.website
       })
     }
     if (nftResult.discord != null) {
-      platformList.add({
+      platformList.push({
         name: 'Discord',
         icon: discordIcon,
         url: nftResult.discord
       })
     }
     if (nftResult.twitter != null) {
-      platformList.add({
+      platformList.push({
         name: 'Twitter',
         icon: twitterIcon,
         url: nftResult.twitter
       })
     }
     if (nftResult.telegram != null) {
-      platformList.add({
+      platformList.push({
         name: 'Telegram',
         icon: telegramIcon,
         url: nftResult.telegram
@@ -117,8 +92,13 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
       Date.parse(new Date())>nftResult.privateSaleStartTime?setPreLimit(nftResult.privateSaleUserMaxMintNum):
         setPreLimit(nftResult.airDropUserMaxMintNum)
 
-    // nftResult.airDropStartTime=1779024123855
-    // nftResult.airDropStartTime=1779024123855
+    // nftResult.airDropStartTime=1647873240000
+    // nftResult.airDropEndTime=1647873240000
+    // nftResult.privateSaleEndTime=1647873240000
+    // nftResult.privateSaleStartTime=1647873240000
+    // nftResult.publicSaleStartTime=1647873240000
+    // nftResult.publicEndTime=1647873240000
+    // console.log(nftResult)
     setNftDetail(nftResult)
     queryMintCount(nftResult)
 
@@ -166,6 +146,9 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
   }
 
   const mintNFT = async () => {
+    if (nftDetail.status!=='minting'){
+      return
+    }
     if (!wallet.connected) {
       await setModalText('Please connect wallet');
       setShowResults(true)
@@ -190,6 +173,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
       //private sale time
       const result=await preSaleNFT(balanceObjectId)
       if (result==='success'){
+        queryMintCount(nftDetail)
         setOpen(false)
         await setModalText(<>
           <div>Congrats! You have successfully minted {stepNum} NFTs. <br/><br/>
@@ -208,6 +192,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
       //public sale time
       const result= await publicSale(balanceObjectId)
       if (result==='success') {
+        queryMintCount(nftDetail)
         setOpen(false)
         await setModalText(<>
           <div>Congrats! You have successfully minted {stepNum} NFTs. <br/><br/>
@@ -389,7 +374,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
       <div className={styles.firstContent}>
         <div className={styles.left}>
           <div className={styles.swiper}>
-            <img src={nftDetail.cover} alt=''/>
+            <img src={nftDetail.nftCollectionCover} alt=''/>
           </div>
         </div>
         <div className={styles.right}>
@@ -422,7 +407,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
 
             <div className={styles.b1} style={{width:(mintCount / nftDetail.totalSupply * 100)+'%'}}>
               <span>
-                {(mintCount / nftDetail.totalSupply * 100) +'% Total Minted'}
+                {((mintCount / nftDetail.totalSupply).toFixed(4) * 100) +'% Total Minted'}
               </span>
             </div>
             <div className={styles.b2}>
@@ -432,32 +417,34 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
             </div>
           </div>
 
-          <div className={styles.privateSale}>
-            <div className={styles.b1}>
-              <div className={styles.t1}>
-                {
-                  Date.parse(new Date())>nftDetail.publicSaleStartTime? 'Public Sale (' +(nftDetail.publicSaleTotalSupply - mintCount)+' items remaining)':
-                    Date.parse(new Date())>nftDetail.privateSaleStartTime?'Private Sale (' +(nftDetail.privateSaleTotalSupply - mintCount)+' items remaining)':
-                      'Airdrop (' +(nftDetail.airDropTotalSupply - mintCount)+' items remaining)'
-                }
+          {
+            nftDetail.status==='minting'?
+            <div className={styles.privateSale}>
+              <div className={styles.b1}>
+                <div className={styles.t1}>
+                  {
+                    Date.parse(new Date()) > nftDetail.publicSaleStartTime ? 'Public Sale (' + (nftDetail.publicSaleTotalSupply - mintCount) + ' items remaining)' :
+                      Date.parse(new Date()) > nftDetail.privateSaleStartTime ? 'Private Sale (' + (nftDetail.privateSaleTotalSupply - mintCount) + ' items remaining)' :
+                        'Airdrop (' + (nftDetail.airDropTotalSupply - mintCount) + ' items remaining)'
+                  }
                 </div>
-              <div className={styles.t2}>{
-                Date.parse(new Date())>nftDetail.publicSaleStartTime? nftDetail.publicSalePrice +' SUI | Max '+nftDetail.publicSaleUserMaxMintNum+' per wallet':
-                Date.parse(new Date())>nftDetail.privateSaleStartTime? nftDetail.privateSalePrice +' SUI | Max '+nftDetail.privateSaleUserMaxMintNum+' per wallet':
-                'Free | Max '+nftDetail.airDropUserMaxMintNum+' per wallet'
-              }</div>
-            </div>
-            <div className={styles.b2}>
-              <div onClick={subtractStep} className={styles.t1}>-</div>
-              <input value={stepNum} onChange={stepInput} type='text'/>
-              <div onClick={addStep} className={styles.t2}>+</div>
-            </div>
-          </div>
+                <div className={styles.t2}>{
+                  Date.parse(new Date()) > nftDetail.publicSaleStartTime ? nftDetail.publicSalePrice + ' SUI | Max ' + nftDetail.publicSaleUserMaxMintNum + ' per wallet' :
+                    Date.parse(new Date()) > nftDetail.privateSaleStartTime ? nftDetail.privateSalePrice + ' SUI | Max ' + nftDetail.privateSaleUserMaxMintNum + ' per wallet' :
+                      'Free | Max ' + nftDetail.airDropUserMaxMintNum + ' per wallet'
+                }</div>
+              </div>
+              <div className={styles.b2}>
+                <div onClick={subtractStep} className={styles.t1}>-</div>
+                <input value={stepNum} onChange={stepInput} type='text'/>
+                <div onClick={addStep} className={styles.t2}>+</div>
+              </div>
+            </div>:null
+          }
 
-
-          <div className={styles.viewDetailBtn} onClick={mintNFT}>
+          <div className={nftDetail.status==='minting'?styles.viewDetailBtn:styles.viewDetailBtn2} onClick={mintNFT}>
             <img className={styles.icon} src={cartIcon} alt=''/>
-            <span>Mint now</span>
+            <span>{nftDetail.status==='ended'?'Mint ended':'Mint now'}</span>
           </div>
         </div>
         <AIGCModal setOpen={setOpen} text={modalText} open={open} showResults={showResults}/>

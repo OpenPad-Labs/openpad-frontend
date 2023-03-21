@@ -72,7 +72,7 @@ const Home = () => {
               <Box
                 sx={{
                   cursor: 'pointer',
-                  // marginRight: '80px',
+                  marginRight: '80px',
                   '&:nth-child(4n)': {
                     marginRight: '0 ',
                   },

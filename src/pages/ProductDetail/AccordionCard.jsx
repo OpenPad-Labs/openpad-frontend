@@ -17,7 +17,8 @@ const AccordionCard = ({
   detail = '',
   defaultExpanded = false,
   contractAddress = '',
-  maxMintNum=1
+  maxMintNum=1,
+                         nftStatus=''
 }) => {
   // console.log('startTime', Date.now() - startTime)
   // console.log('endTime', Date.now() - endTime)
@@ -68,57 +69,8 @@ const AccordionCard = ({
       setOpen(true)
     }
   }
-
-  // const [nowTime, setNowTime] = useState();
-  // const [timeStr, setTimeStr] = useState('');
-  // const [timeStrTips, setTimeStrTips] = useState('');
-
-  // useEffect(() => {
-  //   var dateBegin = new Date();//获取当前时间
-  //   let now = ''
-  //   let nowStr = ''
-  //   // 开始时间大于当前时间时 活动未开始 取开始时间
-  //   if (startTime * 1 > Date.parse(dateBegin)) {
-  //     now = startTime * 1
-  //     nowStr = 'Start'
-  //     setTimeStrTips('Start Date:')
-  //   }
-  //   // 当前时间大于开始时间 小于结束时间 活动已开始 未结束 取结束时间
-  //   if (startTime * 1 < Date.parse(dateBegin) && Date.parse(dateBegin) < endTime * 1) {
-  //     now = endTime * 1
-  //     nowStr = 'Ends'
-  //     setTimeStrTips('End Date:')
-  //   }
-  //   if (Date.parse(dateBegin) > endTime * 1) {
-  //     now = endTime * 1
-  //     setTimeStrTips('End Date: ')
-  //     nowStr = 'Closed'
-  //   }
-  //   setNowTime(now)
-  //   var dateEnd = new Date(now);//将-转化为/，使用new Date
-  //   var dateDiff = dateEnd.getTime() - dateBegin.getTime();//时间差的毫秒数
-  //   var dayDiff = Math.floor(dateDiff / (24 * 3600 * 1000));//计算出相差天数
-  //   var leave1 = dateDiff % (24 * 3600 * 1000)    //计算天数后剩余的毫秒数
-  //   var hours = Math.floor(leave1 / (3600 * 1000))//计算出小时数
-  //   //计算相差分钟数
-  //   var leave2 = leave1 % (3600 * 1000)    //计算小时数后剩余的毫秒数
-  //   var minutes = Math.floor(leave2 / (60 * 1000))//计算相差分钟数
-  //   //计算相差秒数
-  //   var leave3 = leave2 % (60 * 1000)      //计算分钟数后剩余的毫秒数
-  //   var seconds = Math.round(leave3 / 1000)
-  //   // console.log(dayDiff+"d", hours+"h",minutes+"m",seconds+"s");
-  //   if (nowStr === 'Closed') {
-  //     setTimeStr("Active | ")
-  //   } else {
-  //     if (Object.is(dayDiff, NaN)) {
-  //       setTimeStr("Active | ")
-  //     } else {
-  //       setTimeStr("Active | ")
-  //     }
-  //   }
-
-  // }, []);
   return (
+    nftStatus==='minting'?
     <Accordion
       className='Accordion'
       sx={{
@@ -199,7 +151,7 @@ const AccordionCard = ({
         </div> : <div></div>}
       </AccordionDetails>
       <AIGCModal setOpen={setOpen} text={modalText} open={open} showResults={showResults} />
-    </Accordion >
+    </Accordion >:null
   )
 }
 
