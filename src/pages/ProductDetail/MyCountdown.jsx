@@ -13,7 +13,7 @@ const renderer = ({ days, hours, minutes, seconds, completed }) => {
   }
 };
 
-const MyCountdown = ({ start, end }) => {
+const MyCountdown = ({ start, end, activeString }) => {
   const [countdownTime, setCountdownTime] = useState()
 
   useEffect(() => {
@@ -84,7 +84,7 @@ const MyCountdown = ({ start, end }) => {
       placement="top-end"
     >
       <div className={styles.statusBar}>
-        Active | End In
+        {activeString}End In&nbsp;
         <Countdown
           date={end}
           renderer={renderer}

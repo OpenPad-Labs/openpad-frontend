@@ -91,11 +91,12 @@ const Home = () => {
                 <div className={styles.item} key={index}>
                   <div className={styles.endTime}>
                     <MyCountdown
+                      activeString=""
                     start={Number(item.publicSaleStartTime)}
                     end={Number(item.publicEndTime)}
                   /></div>
                   <div className={styles.descImg}>
-                    <img className={styles.img} src={item.nftCollectionCover} alt='' />
+                    <img style={{'borderRadius': '7px'}} className={styles.img} src={item.nftCollectionFeature} alt='' />
                     <div className={styles.tagList}>
                       {
                         item.tag.split(",").map((item , index) => (
@@ -105,7 +106,9 @@ const Home = () => {
                     </div>
                   </div>
                   <div className={styles.createInfo}>
+                    <div style={{'marginBottom':'6px'}}>
                     <span className={styles.symbol}>{item.nftCollectionName}</span>
+                    </div>
                     <span className={styles.user}>by {item.nftCollectionTeam}</span>
                   </div>
                   <div className={styles.operateBox}>
@@ -181,7 +184,7 @@ const Home = () => {
               <div className={styles.item} key={index}>
                 <div className={styles.endTime}>{item.nftCollectionSaveLine}</div>
                 <div className={styles.descImg}>
-                  <img className={styles.img} src={item.nftCollectionCover} alt='' />
+                  <img style={{'borderRadius': '7px'}}  className={styles.img} src={item.nftCollectionFeature} alt='' />
                   <div className={styles.tagList}>
                     {
                       item.tag.split(",").map((item , index) => (
@@ -191,7 +194,9 @@ const Home = () => {
                   </div>
                 </div>
                 <div className={styles.createInfo}>
+                  <div style={{'marginBottom':'6px'}}>
                   <span className={styles.symbol}>{item.nftCollectionName}</span>
+                  </div>
                   <span className={styles.user}>by {item.nftCollectionTeam}</span>
                 </div>
                 <div className={styles.operateBox}>
@@ -267,7 +272,7 @@ const Home = () => {
               <div className={styles.item} key={index}>
                 <div className={styles.endTime}>{item.nftCollectionSaveLine}</div>
                 <div className={styles.descImg}>
-                  <img className={styles.img} src={item.nftCollectionCover} alt='' />
+                  <img style={{'borderRadius': '7px'}}  className={styles.img} src={item.nftCollectionFeature} alt='' />
                   <div className={styles.tagList}>
                     {
                       item.tag.split(",").map((item , index) => (
@@ -277,7 +282,9 @@ const Home = () => {
                   </div>
                 </div>
                 <div className={styles.createInfo}>
+                  <div style={{'marginBottom':'6px'}}>
                   <span className={styles.symbol}>{item.nftCollectionName}</span>
+                  </div>
                   <span className={styles.user}>by {item.nftCollectionTeam}</span>
                 </div>
                 <div className={styles.operateBox}>

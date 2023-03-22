@@ -61,34 +61,34 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
     })
     // console.log(nList)
     platformList=[]
-    if (nftResult.website != null) {
-      platformList.push({
-        name: 'Net',
-        icon: netIcon,
-        url: nftResult.website
-      })
-    }
-    if (nftResult.discord != null) {
-      platformList.push({
-        name: 'Discord',
-        icon: discordIcon,
-        url: nftResult.discord
-      })
-    }
-    if (nftResult.twitter != null) {
-      platformList.push({
-        name: 'Twitter',
-        icon: twitterIcon,
-        url: nftResult.twitter
-      })
-    }
-    if (nftResult.telegram != null) {
-      platformList.push({
-        name: 'Telegram',
-        icon: telegramIcon,
-        url: nftResult.telegram
-      })
-    }
+    // if (nftResult.website != null) {
+    //   platformList.push({
+    //     name: 'Net',
+    //     icon: netIcon,
+    //     url: nftResult.website
+    //   })
+    // }
+    // if (nftResult.discord != null) {
+    //   platformList.push({
+    //     name: 'Discord',
+    //     icon: discordIcon,
+    //     url: nftResult.discord
+    //   })
+    // }
+    // if (nftResult.twitter != null) {
+    //   platformList.push({
+    //     name: 'Twitter',
+    //     icon: twitterIcon,
+    //     url: nftResult.twitter
+    //   })
+    // }
+    // if (nftResult.telegram != null) {
+    //   platformList.push({
+    //     name: 'Telegram',
+    //     icon: telegramIcon,
+    //     url: nftResult.telegram
+    //   })
+    // }
 
     Date.parse(new Date())>nftResult.publicSaleStartTime? setPreLimit(nftResult.publicSaleUserMaxMintNum):
       Date.parse(new Date())>nftResult.privateSaleStartTime?setPreLimit(nftResult.privateSaleUserMaxMintNum):
@@ -165,7 +165,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
     const balanceObjectId = await getCoin()
     if (balanceObjectId === '') {
       await setModalText(<>
-        <div>token don't enough</div>
+        <div>You don't have enough SUI tokens.</div>
       </>);
       setOpen(true)
       return
@@ -185,7 +185,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
         setOpen(true)
       }else {
         await setModalText(<>
-          <div>mint error</div>
+          <div>{result}</div>
         </>)
         setOpen(true)
       }
@@ -204,7 +204,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
         setOpen(true)
       }else {
         await setModalText(<>
-          <div>mint error</div>
+          <div>{result}</div>
         </>)
         setOpen(true)
       }
@@ -283,10 +283,13 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
           data
         }
       });
+      console.log('resData...',resData)
       if (resData?.effects?.status?.status==='success'){
         return 'success'
+      }else if (resData?.effects?.status?.error.includes('10005')){
+        return 'You have reached the maximum mint limit.'
       }else {
-        return 'error'
+        return 'mint error'
       }
     } catch (error) {
       console.log(error)
@@ -325,8 +328,10 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
       console.log('contract resData.effects.status',resData.effects.status.status)
       if (resData?.effects?.status?.status==='success'){
         return 'success'
+      }else if (resData?.effects?.status?.error.includes('10005')){
+        return 'You have reached the maximum mint limit.'
       }else {
-        return 'error'
+        return 'mint error'
       }
   } catch (error) {
       console.log(error)
@@ -376,7 +381,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
       <div className={styles.firstContent}>
         <div className={styles.left}>
           <div className={styles.swiper}>
-            <img src={nftDetail.nftCollectionCover} alt=''/>
+            <img src={nftDetail.nftCollectionFeature} alt=''/>
           </div>
         </div>
         <div className={styles.right}>
@@ -446,7 +451,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
 
           <div className={nftDetail.status==='minting'?styles.viewDetailBtn:styles.viewDetailBtn2} onClick={mintNFT}>
             <img className={styles.icon} src={cartIcon} alt=''/>
-            <span>{nftDetail.status==='ended'?'Mint ended':'Mint now'}</span>
+            <span>{nftDetail.status==='ended'?'Mint ended':nftDetail.status==='minting'?'Mint now':'Mint not open'}</span>
           </div>
         </div>
         <AIGCModal setOpen={setOpen} text={modalText} open={open} showResults={showResults}/>

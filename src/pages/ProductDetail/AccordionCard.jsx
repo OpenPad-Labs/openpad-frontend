@@ -115,6 +115,7 @@ const AccordionCard = ({
               <MyCountdown
                 start={Number(startTime)}
                 end={Number(endTime)}
+                activeString="Active | "
               />
             </div>
           </div>

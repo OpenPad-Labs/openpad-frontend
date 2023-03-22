@@ -7,7 +7,7 @@ import classNames from 'classnames'
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import { Box } from '@mui/material'
-import { ConnectButton } from '@suiet/wallet-kit';
+import { ConnectButton,ConnectModal } from '@suiet/wallet-kit';
 const Header = () => {
   const headerRef = useRef(null)
   const navigate = useNavigate()
@@ -79,7 +79,7 @@ const Header = () => {
     <header id='header_main' className={classNames(styles.header, 'js-header')} ref={headerRef}>
       <div className={styles.content}>
         <div className={styles.left}>
-          <Link to="/suicasso"><img className={styles.logo} src={LogoIcon} alt='' /></Link>
+          <Link to="/"><img className={styles.logo} src={LogoIcon} alt='' /></Link>
           <div className={styles.searchInput}>
             <img src={searchIcon} alt='' className={styles.searchIcon} />
             <input className={styles.input} type='text' placeholder='Type to search...' />
@@ -163,7 +163,6 @@ const Header = () => {
           }}
         >
           <ConnectButton label="Connect Wallet" >
-
           </ConnectButton>
         </Box>
       </div>
