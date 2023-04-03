@@ -2,10 +2,6 @@ import styles from './index.module.scss'
 import React, {useState, useEffect} from 'react'
 import userInfoIcon from '../../assets/img/page/aigc/InfoUser.svg'
 import weijiazai from '../../assets/img/page/home/weijiazai.png'
-import image8 from '../../assets/img/page/aigc/image8.png'
-import image9 from '../../assets/img/page/aigc/image9.png'
-import image10 from '../../assets/img/page/aigc/image10.png'
-import image11 from '../../assets/img/page/aigc/image11.png'
 import MaskGroup from '../../assets/img/page/aigc/MaskGroup.svg'
 import {Box, TextField, Button, Typography, ImageList, ImageListItem, Checkbox} from '@mui/material'
 import twitterIcon from '../../assets/img/page/product_detail/twitter.png'
@@ -19,9 +15,9 @@ import {SuietWallet, useWallet,useAccountBalance} from '@suiet/wallet-kit';
 import {upload, DataURIToBlob, uploadToNFTStorage} from "../../web3/ipfs";
 import CircularProgress from '@mui/material/CircularProgress';
 import AIGCSuccessModal from 'src/components/AIGC/AIGCSuccessModal'
-import AIGCModal from "../../components/AIGC/AIGCModal";
-import {JsonRpcProvider, devnetConnection} from '@mysten/sui.js';
+import {JsonRpcProvider, devnetConnection, Connection, TransactionBlock} from '@mysten/sui.js';
 import AccordionCard from "src/components/accordionCard/AccordionCard";
+import {getObjectSelf} from "../../service/home";
 
 const platformList = [
   {
@@ -235,7 +231,6 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
 
   const RequestAI = async () => {
     // setGenMintLoading(true)
-    console.log(wallet?.account?.address)
       // 找到锚点
       // let anchorElement = document.getElementById("aiResult");
       // console.log("anchorElement",anchorElement)
@@ -262,14 +257,10 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
       return
     }
 
-    // connect to Devnet
-    const provider = new JsonRpcProvider(devnetConnection);
-    // get tokens from the DevNet faucet server
-    const objects = await provider.getObject(
-      '0xa80f535240dc1e06a050b60447d507cf44cd6607',
-    );
-    console.log(objects?.details)
-    if (objects?.details?.data?.fields === undefined || objects?.details?.data?.fields?.whitelist?.fields?.contents.indexOf(wallet?.account?.address) <= -1) {
+    var objects = await getObjectSelf("0x2ce3d8d1bdf34e76beee80976fa74116706e5023f8672c137790194e0e7f26b2");
+    console.log(objects)
+    // console.log(objects?.details)
+    if (objects?.result?.data?.content?.fields?.whitelist?.fields?.contents.indexOf(wallet?.account?.address) <= -1) {
       await setModalText(<><span>It appears you are not on the whitelist. <br/><br/>Please follow the </span> <a href='https://twitter.com/Maxi_sui/status/1632259059788419072' target='_blank' style={{color:'#5142FC'}} rel="noreferrer">instructions</a><span> to get on the whitelist. If you have any doubt, please contact <a href='https://twitter.com/Maxi_sui' target='_blank' style={{color:'#5142FC'}} rel="noreferrer" >@Maxi_sui</a> via twitter.</span></>)
       setShowResults(true)
       setOpen(true)
@@ -345,13 +336,9 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
     }
 
     // connect to Devnet
-    const provider = new JsonRpcProvider(devnetConnection);
-    // get tokens from the DevNet faucet server
-    const objects = await provider.getObject(
-      '0xa80f535240dc1e06a050b60447d507cf44cd6607',
-    );
+    var objects = await getObjectSelf("0x2ce3d8d1bdf34e76beee80976fa74116706e5023f8672c137790194e0e7f26b2");
     console.log(objects)
-    const mintList = objects?.details?.data?.fields?.address_minted?.fields?.contents
+    const mintList = objects?.result?.data?.content?.fields?.address_minted?.fields?.contents
     console.log("mintList",mintList)
     for(var i=0;i<mintList.length;i++){
       var item=mintList[i]
@@ -384,23 +371,38 @@ const AIGCMintContainer = ({formik, userPoint, setOpen, setModalText,setUserPoin
       setCantClick(true)
       setGenMintLoading(true)
       // console.log(url)
-      const data = {
-        packageObjectId: '0x7f3212aec356fdafad71f6c19059b61f2145c9c3',
-        module: 'suicasso',
-        function: 'mint',
-        typeArguments: [],
+      // const data = {
+      //   packageObjectId: '0xc1b2dd14f93c0834900c17279d8cbb0d273b2a91d85dd144f5cb453eed1ef1b7',
+      //   module: 'suicasso',
+      //   function: 'mint',
+      //   typeArguments: [],
+      //   arguments: [
+      //     '0x2ce3d8d1bdf34e76beee80976fa74116706e5023f8672c137790194e0e7f26b2',
+      //     formik.values.text,
+      //     "https://gateway.ipfs.io/ipfs/" + url+"/blob",
+      //   ],
+      //   gasBudget: 10000,
+      // };
+      // const resData = await wallet.signAndExecuteTransactionBlock({
+      //   transaction: {
+      //     kind: 'moveCall',
+      //     data
+      //   }
+      // });
+      const packageObjectId = "0xc1b2dd14f93c0834900c17279d8cbb0d273b2a91d85dd144f5cb453eed1ef1b7";
+      const tx = new TransactionBlock();
+      tx.moveCall({
+        target: `${packageObjectId}::suicasso::mint`,
         arguments: [
-          '0xa80f535240dc1e06a050b60447d507cf44cd6607',
-          formik.values.text,
-          "https://gateway.ipfs.io/ipfs/" + url+"/blob",
-        ],
-        gasBudget: 10000,
-      };
-      const resData = await wallet.signAndExecuteTransaction({
-        transaction: {
-          kind: 'moveCall',
-          data
-        }
+          tx.pure('0x2ce3d8d1bdf34e76beee80976fa74116706e5023f8672c137790194e0e7f26b2'),
+          tx.pure(formik.values.text),
+          tx.pure("https://gateway.ipfs.io/ipfs/" + url+"/blob")
+        ]
+      });
+      // tx.setGasPrice(10000);
+      tx.setGasBudget(20000000);
+      const resData = await wallet.signAndExecuteTransactionBlock({
+        transactionBlock: tx
       });
       // console.log('nft minted successfully!', resData?.effects?.created[0].reference?.objectId)
       setScanUrl("https://suiscan.xyz/devnet/object/"+resData?.effects?.created[0].reference?.objectId)

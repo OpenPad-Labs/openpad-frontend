@@ -1,18 +1,13 @@
 import {memo, useEffect, useState} from 'react'
 import styles from './index.module.scss'
 import {useNavigate,useParams} from 'react-router-dom'
-import {useWallet} from "@suiet/wallet-kit";
-import {getBanner, getNftDetail, getNftList} from 'src/service/home'
-import netIcon from '../../assets/img/page/product_detail/net.png'
-import discordIcon from '../../assets/img/page/product_detail/discord.png'
-import twitterIcon from '../../assets/img/page/product_detail/twitter.png'
-import telegramIcon from '../../assets/img/page/product_detail/telegram.png'
+import {useSuiProvider, useWallet} from "@suiet/wallet-kit";
+import {getBanner, getNftDetail, getNftList, getObjectSelf} from 'src/service/home'
 import cartIcon from '../../assets/img/page/product_detail/cartIcon.png'
-import {devnetConnection, JsonRpcProvider} from "@mysten/sui.js";
+import {Connection, devnetConnection, JsonRpcProvider, localnetConnection} from "@mysten/sui.js";
 import AIGCModal from 'src/components/AIGC/AIGCModal'
 
 let platformList = []
-
 
 const ProductInfo = ({setNftDetail,nftDetail}) => {
   const params = useParams()
@@ -25,17 +20,23 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
   const [showResults, setShowResults] = useState(true);
   const [stepNum, setStepNum] = useState(1)
   const [preLimit, setPreLimit] = useState(1)
+  // const { executeTransactionBlock } = useSuiProvider();
 
   const queryMintCount = async (nftResult) => {
+    await getObjectSelf()
     //project id 0xbe63d945901e09f070384b77522bdf054f69ce3c
     // devnetConnection.fullnode='https://wallet-rpc.devnet.sui.io:443'
-    const provider = new JsonRpcProvider(devnetConnection);
+    const testnetConnection = new Connection({
+      fullnode: 'https://fullnode.testnet.sui.io:443/',
+      faucet: 'https://faucet.testnet.sui.io/gas',
+    });
+    const provider = new JsonRpcProvider(testnetConnection);
     // get tokens from the DevNet faucet server
-    // console.log(nftDetail)
+    console.log("queryMintCount")
     const objects = await provider.getObject(
-      nftResult.nftCollectionAddress,
+      '0x2ce3d8d1bdf34e76beee80976fa74116706e5023f8672c137790194e0e7f26b2',
     );
-    // console.log('objects===',objects)
+    console.log('objects===',objects)
     const tempMintCount = objects?.details?.data?.fields?.art_sequence
     // console.log('tempMintCount',tempMintCount)
     setMintCount(tempMintCount)
@@ -237,7 +238,11 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
 
   const getCoin = async () => {
     //project id 0xbe63d945901e09f070384b77522bdf054f69ce3c
-    const provider = new JsonRpcProvider(devnetConnection);
+    const testnetConnection = new Connection({
+      fullnode: 'https://fullnode.testnet.sui.io:443/',
+      faucet: 'https://faucet.testnet.sui.io/gas',
+    });
+    const provider = new JsonRpcProvider(testnetConnection);
     // get tokens from the DevNet faucet server
     const objects = await provider.getCoins(
       wallet?.account?.address
@@ -266,7 +271,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
   const publicSale = async (balanceObjectId) => {
     try {
       const data = {
-        packageObjectId: '0x53c25b893a8c722194a376b433c68758f787022d',
+        packageObjectId: '0xc1b2dd14f93c0834900c17279d8cbb0d273b2a91d85dd144f5cb453eed1ef1b7',
         module: 'nft',
         function: 'public_sale',
         typeArguments: [],
@@ -304,7 +309,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
   const preSaleNFT = async (balanceObjectId) => {
     try {
     const data = {
-      packageObjectId: '0x53c25b893a8c722194a376b433c68758f787022d',
+      packageObjectId: '0xc1b2dd14f93c0834900c17279d8cbb0d273b2a91d85dd144f5cb453eed1ef1b7',
       module: 'nft',
       function: 'presale',
       typeArguments: [],
@@ -346,7 +351,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
   const airdropNFT = async () => {
     try {
     const data = {
-      packageObjectId: '0x53c25b893a8c722194a376b433c68758f787022d',
+      packageObjectId: '0xc1b2dd14f93c0834900c17279d8cbb0d273b2a91d85dd144f5cb453eed1ef1b7',
       module: 'nft',
       function: 'airdrop',
       typeArguments: [],

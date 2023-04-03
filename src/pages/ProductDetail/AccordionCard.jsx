@@ -3,7 +3,7 @@ import styles from './index.module.scss'
 import { Box, Tooltip, Accordion, AccordionSummary, Typography, AccordionDetails } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import notifyBtn from '../../assets/img/page/product_detail/notifyBtn.svg'
-import { devnetConnection, JsonRpcProvider } from "@mysten/sui.js";
+import {Connection, devnetConnection, JsonRpcProvider} from "@mysten/sui.js";
 import { useWallet } from "@suiet/wallet-kit";
 import AIGCModal from 'src/components/AIGC/AIGCModal'
 import Countdown from "react-countdown";
@@ -37,7 +37,11 @@ const AccordionCard = ({
     setOpen(true)
     // console.log('contractAddress',contractAddress)
     //project id 0xbe63d945901e09f070384b77522bdf054f69ce3c
-    const provider = new JsonRpcProvider(devnetConnection);
+    const testnetConnection = new Connection({
+      fullnode: 'https://fullnode.testnet.sui.io:443/',
+      faucet: 'https://faucet.testnet.sui.io/gas',
+    });
+    const provider = new JsonRpcProvider(testnetConnection);
     // get tokens from the DevNet faucet server
     const objects = await provider.getObject(
       contractAddress

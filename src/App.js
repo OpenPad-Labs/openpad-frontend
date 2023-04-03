@@ -1,7 +1,7 @@
 import './App.css'
 import { Route, Routes } from 'react-router-dom'
 import routes from './pages/index'
-import {useWallet, WalletProvider,useAccountBalance,SuietWallet,MartianWallet} from '@suiet/wallet-kit'
+import {useWallet, WalletProvider,useAccountBalance,SuietWallet,MartianWallet,SuiWallet} from '@suiet/wallet-kit'
 import React, {useEffect} from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -16,7 +16,7 @@ import Footer from './components/footer/Footer'
 function App() {
 
   return (
-    <WalletProvider defaultWallets={[SuietWallet,MartianWallet]}>
+    <WalletProvider defaultWallets={[SuietWallet,MartianWallet,SuiWallet]}>
 
       <Header />
       <Routes>
