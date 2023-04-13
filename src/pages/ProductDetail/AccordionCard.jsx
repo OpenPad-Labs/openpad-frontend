@@ -8,6 +8,7 @@ import { useWallet } from "@suiet/wallet-kit";
 import AIGCModal from 'src/components/AIGC/AIGCModal'
 import Countdown from "react-countdown";
 import MyCountdown from './MyCountdown';
+import {getObjectSelf} from "../../service/home";
 
 const AccordionCard = ({
   title = "Private Sale",
@@ -43,15 +44,16 @@ const AccordionCard = ({
     });
     const provider = new JsonRpcProvider(testnetConnection);
     // get tokens from the DevNet faucet server
-    const objects = await provider.getObject(
-      contractAddress
-    );
+    // const objects = await provider.getObject(
+    //   contractAddress
+    // );
+    var objects = await getObjectSelf(contractAddress);
     console.log(objects)
     let whiteList;
     if (title === 'Airdrop') {
-      whiteList = objects?.details?.data?.fields?.airdrop_list?.fields?.contents
+      whiteList = objects?.result?.data?.content?.fields?.whitelist?.fields?.contents
     } else {
-      whiteList = objects?.details?.data?.fields?.whitelist?.fields?.contents
+      whiteList = objects?.result?.data?.content?.fields?.whitelist?.fields?.contents
     }
     let inWhite = false
     if (whiteList !== undefined) {

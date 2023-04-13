@@ -4,7 +4,7 @@ import {useNavigate,useParams} from 'react-router-dom'
 import {useSuiProvider, useWallet} from "@suiet/wallet-kit";
 import {getBanner, getNftDetail, getNftList, getObjectSelf} from 'src/service/home'
 import cartIcon from '../../assets/img/page/product_detail/cartIcon.png'
-import {Connection, devnetConnection, JsonRpcProvider, localnetConnection} from "@mysten/sui.js";
+import {Connection, devnetConnection, JsonRpcProvider, localnetConnection, TransactionBlock} from "@mysten/sui.js";
 import AIGCModal from 'src/components/AIGC/AIGCModal'
 
 let platformList = []
@@ -33,11 +33,12 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
     const provider = new JsonRpcProvider(testnetConnection);
     // get tokens from the DevNet faucet server
     console.log("queryMintCount")
-    const objects = await provider.getObject(
-      '0x2ce3d8d1bdf34e76beee80976fa74116706e5023f8672c137790194e0e7f26b2',
-    );
+    // const objects = await provider.getObject(
+    //   nftResult.nftCollectionAddress
+    // );
+    var objects = await getObjectSelf(nftResult.nftCollectionAddress);
     console.log('objects===',objects)
-    const tempMintCount = objects?.details?.data?.fields?.art_sequence
+    const tempMintCount = objects?.result?.data?.content?.fields?.art_sequence
     // console.log('tempMintCount',tempMintCount)
     setMintCount(tempMintCount)
     // setMintCount(140)
@@ -163,18 +164,18 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
       <div>Please confirm in your wallet...</div>
     </>);
     setOpen(true)
-    const balanceObjectId = await getCoin()
-    if (balanceObjectId === '') {
-      await setModalText(<>
-        <div>You don't have enough SUI tokens.</div>
-      </>);
-      setOpen(true)
-      return
-    }
+    // const balanceObjectId = await getCoin()
+    // if (balanceObjectId === '') {
+    //   await setModalText(<>
+    //     <div>You don't have enough SUI tokens.</div>
+    //   </>);
+    //   setOpen(true)
+    //   return
+    // }
     const nowTime = Date.parse(new Date())
     if (nowTime > nftDetail.privateSaleStartTime * 1 && nowTime < nftDetail.privateSaleEndTime * 1) {
       //private sale time
-      const result=await preSaleNFT(balanceObjectId)
+      const result=await preSaleNFT()
       if (result==='success'){
         queryMintCount(nftDetail)
         setOpen(false)
@@ -193,7 +194,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
 
     } else if (nowTime > nftDetail.publicSaleStartTime * 1 && nowTime < nftDetail.publicEndTime * 1) {
       //public sale time
-      const result= await publicSale(balanceObjectId)
+      const result= await publicSale()
       if (result==='success') {
         queryMintCount(nftDetail)
         setOpen(false)
@@ -271,7 +272,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
   const publicSale = async (balanceObjectId) => {
     try {
       const data = {
-        packageObjectId: '0xc1b2dd14f93c0834900c17279d8cbb0d273b2a91d85dd144f5cb453eed1ef1b7',
+        packageObjectId: '0x89227c5ee306f6b28a73a6fa5d9bd415a6b147bc367e5c8c2ace9c4b5bd85309',
         module: 'nft',
         function: 'public_sale',
         typeArguments: [],
@@ -308,27 +309,44 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
 
   const preSaleNFT = async (balanceObjectId) => {
     try {
-    const data = {
-      packageObjectId: '0xc1b2dd14f93c0834900c17279d8cbb0d273b2a91d85dd144f5cb453eed1ef1b7',
-      module: 'nft',
-      function: 'presale',
-      typeArguments: [],
-      arguments: [
-        balanceObjectId,
-        nftDetail.nftCollectionAddress,
-        stepNum+""
-        //todo 白名单
-        // nftDetail.nftCollectionAddress
-      ],
-      gasBudget: 10000,
-    };
-      console.log('data', data)
-    const resData = await wallet.signAndExecuteTransaction({
-      transaction: {
-        kind: 'moveCall',
-        data
-      }
-    });
+    // const data = {
+    //   packageObjectId: '0x89227c5ee306f6b28a73a6fa5d9bd415a6b147bc367e5c8c2ace9c4b5bd85309',
+    //   module: 'nft',
+    //   function: 'presale',
+    //   typeArguments: [],
+    //   arguments: [
+    //     balanceObjectId,
+    //     nftDetail.nftCollectionAddress,
+    //     stepNum+""
+    //     //todo 白名单
+    //     // nftDetail.nftCollectionAddress
+    //   ],
+    //   gasBudget: 10000,
+    // };
+    //   console.log('data', data)
+    // const resData = await wallet.signAndExecuteTransaction({
+    //   transaction: {
+    //     kind: 'moveCall',
+    //     data
+    //   }
+    // });
+      const packageObjectId = "0x89227c5ee306f6b28a73a6fa5d9bd415a6b147bc367e5c8c2ace9c4b5bd85309";
+      const tx = new TransactionBlock();
+      const coins = tx.splitCoins(tx.gas, [tx.pure ( 1000000)]);
+
+      tx.moveCall({
+        target: `${packageObjectId}::collection::presale`,
+        arguments: [
+          tx.pure(coins[0]),
+          tx.pure(tx.object(nftDetail.nftCollectionAddress)),
+          tx.pure(1)
+        ]
+      });
+      // tx.setGasPrice(10000);
+      tx.setGasBudget(20000000);
+      const resData = await wallet.signAndExecuteTransactionBlock({
+        transactionBlock: tx
+      });
       console.log('contract resData',resData)
       console.log('contract resData.effects.status',resData.effects.status.status)
       if (resData?.effects?.status?.status==='success'){
@@ -350,22 +368,40 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
 
   const airdropNFT = async () => {
     try {
-    const data = {
-      packageObjectId: '0xc1b2dd14f93c0834900c17279d8cbb0d273b2a91d85dd144f5cb453eed1ef1b7',
-      module: 'nft',
-      function: 'airdrop',
-      typeArguments: [],
-      arguments: [
-        nftDetail.nftCollectionAddress
-      ],
-      gasBudget: 10000,
-    };
-    const resData = await wallet.signAndExecuteTransaction({
-      transaction: {
-        kind: 'moveCall',
-        data
-      }
-    });
+    // const data = {
+    //   packageObjectId: '0x89227c5ee306f6b28a73a6fa5d9bd415a6b147bc367e5c8c2ace9c4b5bd85309',
+    //   module: 'nft',
+    //   function: 'airdrop',
+    //   typeArguments: [],
+    //   arguments: [
+    //     nftDetail.nftCollectionAddress
+    //   ],
+    //   gasBudget: 10000,
+    // };
+    // const resData = await wallet.signAndExecuteTransaction({
+    //   transaction: {
+    //     kind: 'moveCall',
+    //     data
+    //   }
+    // });
+      const packageObjectId = "0x89227c5ee306f6b28a73a6fa5d9bd415a6b147bc367e5c8c2ace9c4b5bd85309";
+      const tx = new TransactionBlock();
+      const coins = tx.splitCoins(tx.gas,[tx.pure(1000000)]);
+
+      tx.moveCall({
+        target: `${packageObjectId}::nft::presale`,
+        typeArguments:[],
+        arguments: [
+          coins[0],
+          tx.object(nftDetail.nftCollectionAddress),
+          tx.pure(1)
+        ]
+      });
+      // tx.setGasPrice(10000);
+      tx.setGasBudget(100000000);
+      const resData = await wallet.signAndExecuteTransactionBlock({
+        transactionBlock: tx
+      });
     console.log('resData airdrop', resData)
       if (resData?.effects?.status?.status==='success'){
         return 'success'

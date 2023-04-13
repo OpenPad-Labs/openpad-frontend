@@ -96,16 +96,16 @@ const ActivityList = ({nftDetail}) => {
         width:500
       }}/>
       <div className={styles.accordionCard}>
-        <AccordionCard
-          price={nftDetail.privateSalePrice}
-          detail={nftDetail.privateSaleText}
-          startTime={nftDetail.privateSaleStartTime}
-          endTime={nftDetail.privateSaleEndTime}
-          defaultExpanded={true}
-          contractAddress={nftDetail.nftCollectionAddress}
-          maxMintNum={nftDetail.privateSaleUserMaxMintNum}
-          nftStatus={nftDetail.status}
-        />
+        {/*<AccordionCard*/}
+        {/*  price={nftDetail.privateSalePrice}*/}
+        {/*  detail={nftDetail.privateSaleText}*/}
+        {/*  startTime={nftDetail.privateSaleStartTime}*/}
+        {/*  endTime={nftDetail.privateSaleEndTime}*/}
+        {/*  defaultExpanded={true}*/}
+        {/*  contractAddress={nftDetail.nftCollectionAddress}*/}
+        {/*  maxMintNum={nftDetail.privateSaleUserMaxMintNum}*/}
+        {/*  nftStatus={nftDetail.status}*/}
+        {/*/>*/}
         <AccordionCard
           price={nftDetail.airDropPrice}
           detail={nftDetail.airDropText}
@@ -116,16 +116,16 @@ const ActivityList = ({nftDetail}) => {
           maxMintNum={nftDetail.airDropUserMaxMintNum}
           nftStatus={nftDetail.status}
         />
-        <AccordionCard
-          price={nftDetail.publicSalePrice}
-          detail={nftDetail.publicSaleText}
-          startTime={nftDetail.publicSaleStartTime}
-          endTime={nftDetail.publicEndTime}
-          title='Public Sale'
-          contractAddress={nftDetail.nftCollectionAddress}
-          maxMintNum={nftDetail.publicSaleUserMaxMintNum}
-          nftStatus={nftDetail.status}
-        />
+        {/*<AccordionCard*/}
+        {/*  price={nftDetail.publicSalePrice}*/}
+        {/*  detail={nftDetail.publicSaleText}*/}
+        {/*  startTime={nftDetail.publicSaleStartTime}*/}
+        {/*  endTime={nftDetail.publicEndTime}*/}
+        {/*  title='Public Sale'*/}
+        {/*  contractAddress={nftDetail.nftCollectionAddress}*/}
+        {/*  maxMintNum={nftDetail.publicSaleUserMaxMintNum}*/}
+        {/*  nftStatus={nftDetail.status}*/}
+        {/*/>*/}
       </div>
     </div>
   )
