@@ -128,6 +128,8 @@
           color: #FFFFFF;
           width: 620px;
           margin-top: 29px;
+          white-space: pre-line;
+
 
           @media (max-width:750px) {
             width: calc(100vw - 40px);

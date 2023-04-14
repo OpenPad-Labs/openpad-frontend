@@ -132,7 +132,11 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
     if (stepNum == '') {
       setStepNum(1)
     } else {
-      setStepNum(stepNum * 1 + 1)
+      let num=stepNum * 1 + 1
+      if (num >= Number(preLimit)) {
+        num = preLimit
+      }
+      setStepNum(num)
     }
   }
 
@@ -225,6 +229,11 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
         </>)
         setOpen(true)
       }
+    }else {
+      await setModalText(<>
+        <div>The mint hasn’t started.</div>
+      </>)
+      setOpen(true)
     }
     } catch (error) {
       console.log(error)
