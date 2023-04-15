@@ -92,8 +92,8 @@ const Home = () => {
                   <div className={styles.endTime}>
                     <MyCountdown
                       activeString=""
-                    start={Number(item.publicSaleStartTime)}
-                    end={Number(item.publicEndTime)}
+                    start={Number(item.airDropStartTime)}
+                    end={Number(item.airDropEndTime)}
                   /></div>
                   <div className={styles.descImg}>
                     <img style={{'borderRadius': '7px'}} className={styles.img} src={item.nftCollectionFeature} alt='' />

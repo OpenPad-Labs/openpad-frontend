@@ -68,10 +68,7 @@ const AccordionCard = ({
       await setModalText(<><div>Congrats! You are eligible to mint!</div></>);
       setOpen(true)
     } else {
-      await setModalText(<><div>Sorry! You are not on the list. <br />
-        Click here to view the whitelist<br />
-        If you believe that you should be on the list, please contact @NFTPROJ directly.<br /><br />
-        Or, join Maxi Membership to enter the whitelist directly.</div></>);
+      await setModalText(<><div>Sorry, you are not on the list. If you have any questions, please contact @suigalsnft on twitter directly.</div></>);
       setOpen(true)
     }
   }
