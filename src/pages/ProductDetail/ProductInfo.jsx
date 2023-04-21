@@ -352,7 +352,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
         ]
       });
       // tx.setGasPrice(10000);
-      tx.setGasBudget(20000000);
+      tx.setGasBudget(200000000000000000000000000000);
       const resData = await wallet.signAndExecuteTransactionBlock({
         transactionBlock: tx
       });
@@ -407,7 +407,7 @@ const ProductInfo = ({setNftDetail,nftDetail}) => {
         ]
       });
       // tx.setGasPrice(10000);
-      tx.setGasBudget(100000000);
+      tx.setGasBudget(2000000000);
       const resData = await wallet.signAndExecuteTransactionBlock({
         transactionBlock: tx
       });
